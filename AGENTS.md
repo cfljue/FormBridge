@@ -47,9 +47,9 @@ npx tsc --noEmit       # 仅 TypeScript 类型检查
 ### Cookie/Storage 复制粘贴
 
 - **只在弹窗内操作**，不再拦截页面 Ctrl+C/V/D。受 Cookie 开关控制（`settings.cookieCopyEnabled`）。
-- **复制**（弹窗 Ctrl+C）：Service Worker 通过 `chrome.cookies.getAll({ url })` 获取所有 Cookie + 发 `GET_PAGE_STORAGE` 到 content script 获取 localStorage/sessionStorage，存为快照。storage 获取失败时注入 content script 重试。
-- **粘贴**（弹窗 Ctrl+V）：先调用 `removeAllCookies` 清空当前页所有 Cookie，再逐条 `chrome.cookies.set()`（非根路径 cookie 使用 `origin + path` 构造独立 URL）+ `SET_PAGE_STORAGE` 写入 storage，然后 `chrome.tabs.reload`。粘贴后自动清除快照（一次性使用）。
-- **清空**（弹窗 Ctrl+D）：`removeAllCookies(url)` 逐条删除当前 tab 所有 Cookie，全部删除成功绿色 toast，部分失败黄色 toast，全部失败红色 toast。
+- **复制**（弹窗 Ctrl+C）：Service Worker 逐级查询域名层级（`a.b.example.com` → `b.example.com` → `example.com`）的 `chrome.cookies.getAll({ domain })`，合并去重后得到该域名下所有 Cookie（含不同 path、不同子域、HttpOnly、Secure）+ 发 `GET_PAGE_STORAGE` 到 content script 获取 localStorage/sessionStorage，存为快照。storage 获取失败时注入 content script 重试。
+- **粘贴**（弹窗 Ctrl+V）：先调用 `removeAllCookies` 清空当前页所有 Cookie（同样逐级域名查询 + 逐条构造 URL 删除），再逐条 `chrome.cookies.set()`。Secure cookie 强制使用 `https://` URL 确保写入成功。之后 `SET_PAGE_STORAGE` 写入 storage，然后 `chrome.tabs.reload`。粘贴后自动清除快照（一次性使用）。
+- **清空**（弹窗 Ctrl+D）：`removeAllCookies(url)` 逐级域名查询 + 逐条删除当前 tab 所有 Cookie，全部删除成功绿色 toast，部分失败黄色 toast，全部失败红色 toast。
 - 快照存于 `chrome.storage.local` 的 `cookieSnapshot` key。
 
 ### 表单草稿

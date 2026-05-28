@@ -4,7 +4,7 @@ Chrome 扩展（Manifest V3），面向开发者的表单管理工具箱。
 
 ## 功能
 
-- **Cookie / Storage 跨域搬运**：弹窗中 Ctrl+C 捕获当前页面所有 Cookie（含 HttpOnly）、localStorage、sessionStorage；切换到目标页面 Ctrl+V 一键写入并刷新。粘贴后自动清除快照。
+- **Cookie / Storage 跨域搬运**：弹窗中 Ctrl+C 捕获当前页面所有 Cookie（含 HttpOnly、Secure）、localStorage、sessionStorage；切换到目标页面 Ctrl+V 一键写入并刷新。粘贴后自动清除快照。Ctrl+D 清空当前页面所有 Cookie 并刷新。
 - **表单自动填充**：基于 CSS 选择器的精准填充，支持 name/placeholder/label/aria-label 兜底匹配，兼容 React/Vue 框架事件。可选择器未命中时黄色警告。
 - **数据面板**：弹窗内数据卡片网格，按当前页 URL 智能匹配排序，支持拖拽排序、搜索过滤、一键填充跳转。
 - **模板管理**：可复用的表单模板（字段名 + CSS 选择器 + 按钮配置），支持导入/导出 JSON。
@@ -59,6 +59,7 @@ npx tsc --noEmit
 | 搜索框 | 按名称/网址过滤 |
 | Ctrl+C | 捕获当前页 Cookie + Storage |
 | Ctrl+V | 粘贴到当前页（需先 Ctrl+C） |
+| Ctrl+D | 清空当前页所有 Cookie 并刷新 |
 | 宽度选择器 | 400 / 600 / 800px |
 
 ### 提取模板
@@ -85,6 +86,6 @@ form-manege/
 │   └── i18n/              # 国际化（运行时切换中英文）
 ├── public/icons/          # 扩展图标
 ├── TEST_PLAN.md           # 手动测试清单
-├── CLAUDE.md              # Claude Code 指引
+├── AGENTS.md              # AI 编码助手项目指引
 └── vite.config.ts         # Vite 构建配置
 ```
