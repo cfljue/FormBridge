@@ -98,16 +98,15 @@ export async function setCookiesBatch(
   const urlObj = new URL(targetUrl);
 
   for (const cookie of cookies) {
-    // Use https:// for secure cookies regardless of target protocol,
-    // otherwise Chrome refuses to create them.
     const protocol = cookie.secure ? 'https:' : urlObj.protocol;
-    const cookieUrl = `${protocol}//${urlObj.hostname}${cookie.path || '/'}`;
+    const originalPath = cookie.path || '/';
+    const cookieUrl = `${protocol}//${urlObj.hostname}${originalPath}`;
 
     const details: chrome.cookies.SetDetails = {
       url: cookieUrl,
       name: cookie.name,
       value: cookie.value,
-      path: cookie.path || '/',
+      path: originalPath,
       httpOnly: cookie.httpOnly,
       secure: cookie.secure ?? false,
       sameSite: cookie.sameSite as chrome.cookies.SameSiteStatus | undefined,
@@ -123,6 +122,32 @@ export async function setCookiesBatch(
     } else {
       result.failed++;
       result.errors.push(`${cookie.name}: failed to set`);
+    }
+
+    // If the original cookie path is not /, also write a copy at /
+    // so the cookie is visible on all pages under the domain.
+    if (originalPath !== '/') {
+      const rootDetails: chrome.cookies.SetDetails = {
+        url: `${protocol}//${urlObj.hostname}/`,
+        name: cookie.name,
+        value: cookie.value,
+        path: '/',
+        httpOnly: cookie.httpOnly,
+        secure: cookie.secure ?? false,
+        sameSite: cookie.sameSite as chrome.cookies.SameSiteStatus | undefined,
+      };
+
+      if (cookie.expirationDate) {
+        rootDetails.expirationDate = cookie.expirationDate;
+      }
+
+      const rootSet = await setCookie(rootDetails);
+      if (rootSet) {
+        result.success++;
+      } else {
+        result.failed++;
+        result.errors.push(`${cookie.name} (path=/): failed to set`);
+      }
     }
   }
 

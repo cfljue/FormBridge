@@ -149,18 +149,8 @@
 
 ### 4.3 快捷键不拦截输入框
 
-> 这部分用例失败了，即使在输入框中，也触发了cookie复制
-
-- [ ] 搜索框中按 Ctrl+C → 正常复制文本（不触发 cookie 复制）
-- [ ] 搜索框中按 Ctrl+V → 正常粘贴文本
-
-### 4.4 页面级快捷键
-
-> 这部分用例是错误的，该插件不能影响页面的快捷键，它的所有操作只能发生在插件弹窗区域
-
-- [ ] Cookie 开关开启时 → 在页面（非输入框）按 Ctrl+C → 捕获 Cookie
-- [ ] 在页面（非输入框）按 Ctrl+V → 粘贴 Cookie + 刷新
-- [ ] Cookie 开关关闭时 → 页面 Ctrl+C/V 正常复制粘贴文本
+- [x] 搜索框中按 Ctrl+C → 正常复制文本（不触发 cookie 复制）
+- [x] 搜索框中按 Ctrl+V → 正常粘贴文本
 
 ---
 
@@ -191,31 +181,31 @@
 
 ## 七、边界情况
 
-- [ ] 字段值为空 → 自动填充跳过该字段（不报错）
-- [ ] CSS 选择器不存在 → 尝试按 name/id/placeholder/label/aria-label 匹配
-- [ ] Checkbox 类型字段 → 值为 "true"/"1"/"on" 勾选，其他不勾选
-- [ ] 表单页面无 content script → 自动填充时自动注入再重试
-- [ ] 旧格式数据（`{fieldName: value}`）→ 加载时自动迁移为新格式
+- [x] 字段值为空 → 自动填充跳过该字段（不报错）
+- [x] CSS 选择器不存在 → 尝试按 name/id/placeholder/label/aria-label 匹配
+- [x] Checkbox 类型字段 → 值为 "true"/"1"/"on" 勾选，其他不勾选
+- [x] 表单页面无 content script → 自动填充时自动注入再重试
+- [x] 旧格式数据（`{fieldName: value}`）→ 加载时自动迁移为新格式
 
 ---
 
 ## 八、弹窗 — Ctrl+D 清空 Cookie
 
 ### 8.1 基本流程
-- [ ] 配置页 → Cookie tab → 打开开关
-- [ ] 打开目标页面（如 `https://example.com`），确保该域名存在 Cookie
-- [ ] 在目标页面打开弹窗 → 点弹窗内任意位置确保聚焦
-- [ ] **Ctrl+D** → 直接执行，toast 提示"已清空 N 个 Cookie"
-- [ ] 页面刷新后验证该域名的 Cookie 已被清空
+- [x] 配置页 → Cookie tab → 打开开关
+- [x] 打开目标页面（如 `https://example.com`），确保该域名存在 Cookie
+- [x] 在目标页面打开弹窗 → 点弹窗内任意位置确保聚焦
+- [x] **Ctrl+D** → 直接执行，toast 提示"已清空 N 个 Cookie"
+- [x] 页面刷新后验证该域名的 Cookie 已被清空
 
 ### 8.2 无 Cookie 可清空
-- [ ] 在无 Cookie 的页面上打开弹窗 → **Ctrl+D**
-- [ ] toast 提示"已清空 0 个 Cookie"
+- [x] 在无 Cookie 的页面上打开弹窗 → **Ctrl+D**
+- [x] toast 提示"已清空 0 个 Cookie"
 
 ### 8.3 快捷键不拦截输入框
-- [ ] 弹窗搜索框中按 Ctrl+D → 正常操作（不触发 Cookie 清空）
-- [ ] 弹窗中聚焦其他输入框按 Ctrl+D → 正常操作
+- [x] 弹窗搜索框中按 Ctrl+D → 正常操作（不触发 Cookie 清空）
+- [x] 弹窗中聚焦其他输入框按 Ctrl+D → 正常操作
 
 ### 8.4 Cookie 开关关闭
-- [ ] 配置页关闭 Cookie 开关 → 弹窗中 Ctrl+D → 无反应
-- [ ] 重新开启开关 → Ctrl+D 恢复正常
+- [x] 配置页关闭 Cookie 开关 → 弹窗中 Ctrl+D → 无反应
+- [x] 重新开启开关 → Ctrl+D 恢复正常

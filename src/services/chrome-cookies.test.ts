@@ -79,6 +79,37 @@ describe('chrome-cookies service', () => {
         expect.objectContaining({ expirationDate: 9999999 })
       );
     });
+
+    it('also creates a path=/ copy when original path is not /', async () => {
+      const cookies = [makeCookie({ name: 'token', path: '/app' })];
+      const result = await setCookiesBatch(cookies, 'https://target.com');
+
+      expect(result.success).toBe(2);
+      expect(result.failed).toBe(0);
+      expect(cookiesMock.set).toHaveBeenCalledTimes(2);
+      expect(cookiesMock.set).toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'token', path: '/app' })
+      );
+      expect(cookiesMock.set).toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'token', path: '/' })
+      );
+    });
+
+    it('does not duplicate when original path is /', async () => {
+      const cookies = [makeCookie({ name: 'token', path: '/' })];
+      const result = await setCookiesBatch(cookies, 'https://target.com');
+
+      expect(result.success).toBe(1);
+      expect(cookiesMock.set).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not duplicate when original path is empty (defaults to /)', async () => {
+      const cookies = [makeCookie({ name: 'token', path: '' })];
+      const result = await setCookiesBatch(cookies, 'https://target.com');
+
+      expect(result.success).toBe(1);
+      expect(cookiesMock.set).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('removeAllCookies', () => {

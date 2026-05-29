@@ -137,8 +137,7 @@ export class DataWizard extends LitElement {
     const d = this._formData;
     if (!d.name.trim()) return;
     const values: DataFieldValue[] = d.fields
-      .filter((f) => f.value?.trim())
-      .map((f) => ({ name: f.name, selector: f.selector ?? '', value: f.value!.trim() }));
+      .map((f) => ({ name: f.name, selector: f.selector ?? '', value: (f.value ?? '').trim() }));
     this.dispatchEvent(new CustomEvent('data-submit', {
       detail: {
         name: d.name.trim(), description: d.description.trim(), url: d.url.trim(),
