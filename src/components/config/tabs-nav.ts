@@ -34,6 +34,16 @@ export class TabsNav extends LitElement {
     .tabs button.active { color: #2563eb; border-bottom-color: #2563eb; font-weight: 600; }
 
     .spacer { flex: 1; }
+    .right-actions {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .guide-btn {
+      padding: 5px 14px; border-radius: 5px; font-size: 12px; font-weight: 500; cursor: pointer;
+      border: 1px solid #e2e8f0; background: #fff; color: #64748b;
+      transition: all 0.15s; white-space: nowrap;
+    }
+    .guide-btn:hover { border-color: #2563eb; color: #2563eb; background: #f8faff; }
+    .guide-btn.active { border-color: #2563eb; color: #2563eb; background: #eff6ff; font-weight: 600; }
     .lang-btn {
       padding: 5px 14px; border-radius: 5px; font-size: 12px; font-weight: 500; cursor: pointer;
       border: 1px solid #e2e8f0; background: #fff; color: #475569;
@@ -62,7 +72,10 @@ export class TabsNav extends LitElement {
         <button class=${this.active === 'cookie' ? 'active' : ''} @click=${() => this._select('cookie')}>${this._i18n.t('config.tabCookie')}</button>
       </div>
       <div class="spacer"></div>
-      <button class="lang-btn" @click=${() => this.dispatchEvent(new CustomEvent('toggle-lang', { bubbles: true, composed: true }))}>${this._i18n.t('lang.switch')}</button>
+      <div class="right-actions">
+        <button class="guide-btn ${this.active === 'guide' ? 'active' : ''}" @click=${() => this._select('guide')}>${this._i18n.t('config.tabGuide')}</button>
+        <button class="lang-btn" @click=${() => this.dispatchEvent(new CustomEvent('toggle-lang', { bubbles: true, composed: true }))}>${this._i18n.t('lang.switch')}</button>
+      </div>
     `;
   }
 }

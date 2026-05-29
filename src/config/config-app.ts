@@ -6,6 +6,7 @@ import '@config/tabs-nav';
 import '@config/template-management';
 import '@config/data-management';
 import '@config/cookie-settings';
+import '@config/guide-page';
 import '@shared/toast-notification';
 
 @customElement('config-app')
@@ -51,7 +52,9 @@ export class ConfigApp extends LitElement {
               ? html`<template-management></template-management>`
               : this._tab === 'data'
               ? html`<data-management></data-management>`
-              : html`<cookie-settings></cookie-settings>`}
+              : this._tab === 'cookie'
+              ? html`<cookie-settings></cookie-settings>`
+              : html`<guide-page></guide-page>`}
           </div>
         </div>
       </div>
