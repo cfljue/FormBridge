@@ -112,23 +112,6 @@ export default {
   'config.tabCookie': 'Cookie',
   'config.tabGuide': 'User Guide',
 
-  // User Guide
-  'guide.title': 'User Guide',
-  'guide.overview': 'Overview',
-  'guide.overviewText': 'Form Manage is a browser extension for managing form auto-fill data, templates, and cross-domain cookie/storage copying.',
-  'guide.templateTitle': 'Templates',
-  'guide.templateText': 'Templates define the structure of form fields. Each template includes: name, target URL, a list of form fields (field name + CSS selector), and optional auto-click button configuration.',
-  'guide.dataTitle': 'Data',
-  'guide.dataText': 'Data records contain the actual values to fill into forms. Create a data record by selecting a template and filling in values for each field defined in the template. Data is linked to templates and auto-matched during filling.',
-  'guide.fillTitle': 'Auto-fill',
-  'guide.fillText': 'Click the extension icon on the target page to open the popup. Search and select a data record — the extension will automatically fill the form fields on the page. If buttons are configured, they will be clicked after filling.',
-  'guide.cookieTitle': 'Cookie Copy',
-  'guide.cookieText': 'In the popup, press Ctrl+C to copy cookies and storage from the current page. Switch to the target page and press Ctrl+V to paste. Press Ctrl+D to clear all cookies on the current page. This feature must be manually enabled in Cookie Settings.',
-  'guide.shortcutTitle': 'Shortcuts',
-  'guide.shortcutCopy': 'Ctrl+C — Copy cookies & storage from current page',
-  'guide.shortcutPaste': 'Ctrl+V — Paste cookies & storage to current page',
-  'guide.shortcutClear': 'Ctrl+D — Clear all cookies on current page',
-
   // Language
   'lang.switch': '中文',
   'lang.label': 'Language',

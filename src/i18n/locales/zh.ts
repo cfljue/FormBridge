@@ -112,23 +112,6 @@ export default {
   'config.tabCookie': 'Cookie',
   'config.tabGuide': '用户指南',
 
-  // User Guide
-  'guide.title': '用户指南',
-  'guide.overview': '概述',
-  'guide.overviewText': '表单管理是一款浏览器扩展，用于管理表单自动填充数据、模板，以及跨域复制 Cookie 和存储。',
-  'guide.templateTitle': '模板管理',
-  'guide.templateText': '模板定义了表单字段的结构。每个模板包含：名称、目标网址、表单字段列表（字段名 + CSS 选择器），以及可选的自动点击按钮配置。',
-  'guide.dataTitle': '数据管理',
-  'guide.dataText': '数据记录了要填充到表单中的实际值。创建数据时选择一个模板，然后为模板中定义的每个字段填写值。数据与模板关联，填充时会自动匹配。',
-  'guide.fillTitle': '自动填充',
-  'guide.fillText': '在目标网页上点击扩展图标打开弹窗，搜索并选择一条数据，扩展会自动将数据填充到页面表单的对应字段中。如果配置了按钮，填充后还会自动点击。',
-  'guide.cookieTitle': 'Cookie 复制',
-  'guide.cookieText': '在弹窗中按 Ctrl+C 复制当前页面的 Cookie 和 Storage，切换到目标页面后按 Ctrl+V 粘贴。按 Ctrl+D 清空当前页面 Cookie。此功能需在 Cookie 设置页手动开启。',
-  'guide.shortcutTitle': '快捷键',
-  'guide.shortcutCopy': 'Ctrl+C — 复制当前页面 Cookie 和 Storage',
-  'guide.shortcutPaste': 'Ctrl+V — 粘贴 Cookie 和 Storage 到当前页面',
-  'guide.shortcutClear': 'Ctrl+D — 清空当前页面所有 Cookie',
-
   // Language
   'lang.switch': 'English',
   'lang.label': '语言',
