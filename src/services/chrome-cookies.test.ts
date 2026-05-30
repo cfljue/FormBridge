@@ -121,7 +121,7 @@ describe('chrome-cookies service', () => {
       ];
       cookiesMock.getAll.mockResolvedValue(cookies);
 
-      const result = await removeAllCookies('https://example.com');
+      const result = await removeAllCookies('https://sub.example.com');
 
       expect(result.removed).toBe(3);
       expect(result.failed).toBe(0);
@@ -138,7 +138,7 @@ describe('chrome-cookies service', () => {
         .mockResolvedValueOnce({} as chrome.cookies.Details)
         .mockRejectedValueOnce(new Error('failed'));
 
-      const result = await removeAllCookies('https://example.com');
+      const result = await removeAllCookies('https://sub.example.com');
 
       expect(result.removed).toBe(1);
       expect(result.failed).toBe(1);
@@ -147,7 +147,7 @@ describe('chrome-cookies service', () => {
     it('returns zeros when getAll returns empty', async () => {
       cookiesMock.getAll.mockResolvedValue([]);
 
-      const result = await removeAllCookies('https://example.com');
+      const result = await removeAllCookies('https://sub.example.com');
 
       expect(result.removed).toBe(0);
       expect(result.failed).toBe(0);

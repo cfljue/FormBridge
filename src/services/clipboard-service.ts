@@ -19,8 +19,7 @@ export async function clearSnapshot(): Promise<void> {
 
 export async function captureFromTab(tabId: number, url: string): Promise<CookieSnapshot | null> {
   try {
-    const domain = new URL(url).hostname;
-    const cookies = await getAllCookies(domain);
+    const cookies = await getAllCookies(url);
 
     let ls: Record<string, string> = {};
     let ss: Record<string, string> = {};
@@ -43,7 +42,7 @@ export async function captureFromTab(tabId: number, url: string): Promise<Cookie
     }
 
     const snapshot: CookieSnapshot = {
-      sourceDomain: domain,
+      sourceDomain: new URL(url).hostname,
       sourceUrl: url,
       cookies,
       localStorage: ls,

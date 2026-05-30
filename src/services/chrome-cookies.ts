@@ -1,19 +1,28 @@
-export async function getAllCookies(domain: string): Promise<chrome.cookies.Cookie[]> {
+function isCookieVisibleOn(cookie: chrome.cookies.Cookie, hostname: string): boolean {
+  const d = cookie.domain;
+  if (d === hostname) return true;
+  if (d.startsWith('.') && hostname.endsWith(d)) return true;
+  if (!d.startsWith('.') && hostname.endsWith('.' + d)) return true;
+  return false;
+}
+
+export async function getAllCookies(url: string): Promise<chrome.cookies.Cookie[]> {
   try {
-    // Query all domain levels to catch cookies set on parent domains.
-    // e.g. for "a.b.example.com" → try "a.b.example.com", "b.example.com", "example.com"
-    const parts = domain.toLowerCase().split('.');
-    const domains: string[] = [];
-    for (let i = 0; i < parts.length - 1; i++) {
+    const hostname = new URL(url).hostname.toLowerCase();
+    const parts = hostname.split('.');
+
+    const domains: string[] = [hostname];
+    for (let i = 1; i < parts.length - 1; i++) {
       domains.push(parts.slice(i).join('.'));
     }
 
     const seen = new Set<string>();
     const result: chrome.cookies.Cookie[] = [];
 
-    for (const d of domains) {
-      const batch = await chrome.cookies.getAll({ domain: d });
+    for (const domain of domains) {
+      const batch = await chrome.cookies.getAll({ domain });
       for (const c of batch) {
+        if (!isCookieVisibleOn(c, hostname)) continue;
         const key = `${c.name}|${c.domain}|${c.path}`;
         if (!seen.has(key)) {
           seen.add(key);
@@ -54,34 +63,31 @@ export async function removeAllCookies(url: string): Promise<CookieRemoveResult>
   try {
     const hostname = new URL(url).hostname.toLowerCase();
     const parts = hostname.split('.');
-    const domains: string[] = [];
-    for (let i = 0; i < parts.length - 1; i++) {
+
+    const domains: string[] = [hostname];
+    for (let i = 1; i < parts.length - 1; i++) {
       domains.push(parts.slice(i).join('.'));
     }
 
     const seen = new Set<string>();
-    const cookies: chrome.cookies.Cookie[] = [];
 
-    for (const d of domains) {
-      const batch = await chrome.cookies.getAll({ domain: d });
-      for (const c of batch) {
-        const key = `${c.name}|${c.domain}|${c.path}`;
-        if (!seen.has(key)) {
-          seen.add(key);
-          cookies.push(c);
+    for (const domain of domains) {
+      const batch = await chrome.cookies.getAll({ domain });
+      for (const cookie of batch) {
+        if (!isCookieVisibleOn(cookie, hostname)) continue;
+        const key = `${cookie.name}|${cookie.domain}|${cookie.path}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+
+        try {
+          const cookieDomain = (cookie.domain.startsWith('.') ? cookie.domain.slice(1) : cookie.domain);
+          const protocol = cookie.secure ? 'https:' : 'http:';
+          const removeUrl = `${protocol}//${cookieDomain}${cookie.path || '/'}`;
+          await chrome.cookies.remove({ url: removeUrl, name: cookie.name });
+          result.removed++;
+        } catch {
+          result.failed++;
         }
-      }
-    }
-
-    for (const cookie of cookies) {
-      try {
-        const cookieDomain = (cookie.domain.startsWith('.') ? cookie.domain.slice(1) : cookie.domain);
-        const protocol = cookie.secure ? 'https:' : 'http:';
-        const removeUrl = `${protocol}//${cookieDomain}${cookie.path || '/'}`;
-        await chrome.cookies.remove({ url: removeUrl, name: cookie.name });
-        result.removed++;
-      } catch {
-        result.failed++;
       }
     }
   } catch {
