@@ -16,35 +16,35 @@
     </filter>
     <mask id="cookie-bites">
       <rect width="128" height="128" fill="white"/>
-      <circle cx="111" cy="71" r="8" fill="black"/>
-      <circle cx="116" cy="85" r="6" fill="black"/>
+      <circle cx="116" cy="71" r="8" fill="black"/>
+      <circle cx="121" cy="85" r="6" fill="black"/>
     </mask>
   </defs>
 
   <rect x="4" y="4" width="120" height="120" rx="28" fill="url(#background)"/>
 
   <g filter="url(#shadow)">
-    <rect x="22" y="22" width="74" height="84" rx="13" fill="white"/>
-    <rect x="34" y="35" width="34" height="7" rx="3.5" fill="#065F46"/>
+    <rect x="27" y="22" width="74" height="84" rx="13" fill="white"/>
+    <rect x="39" y="35" width="34" height="7" rx="3.5" fill="#065F46"/>
 
-    <rect x="34" y="51" width="50" height="14" rx="5" fill="#D1FAE5"/>
-    <circle cx="42" cy="58" r="3" fill="#10B981"/>
-    <rect x="49" y="55.5" width="27" height="5" rx="2.5" fill="#6EE7B7"/>
+    <rect x="39" y="51" width="50" height="14" rx="5" fill="#D1FAE5"/>
+    <circle cx="47" cy="58" r="3" fill="#10B981"/>
+    <rect x="54" y="55.5" width="27" height="5" rx="2.5" fill="#6EE7B7"/>
 
-    <rect x="34" y="72" width="50" height="14" rx="5" fill="#D1FAE5"/>
-    <circle cx="42" cy="79" r="3" fill="#10B981"/>
-    <rect x="49" y="76.5" width="20" height="5" rx="2.5" fill="#6EE7B7"/>
+    <rect x="39" y="72" width="50" height="14" rx="5" fill="#D1FAE5"/>
+    <circle cx="47" cy="79" r="3" fill="#10B981"/>
+    <rect x="54" y="76.5" width="20" height="5" rx="2.5" fill="#6EE7B7"/>
 
-    <path d="M61 94H77" fill="none" stroke="#0F766E" stroke-width="7" stroke-linecap="round"/>
-    <path d="m73 88 8 6-8 6" fill="none" stroke="#0F766E" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M66 94H82" fill="none" stroke="#0F766E" stroke-width="7" stroke-linecap="round"/>
+    <path d="m78 88 8 6-8 6" fill="none" stroke="#0F766E" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
   </g>
 
   <g mask="url(#cookie-bites)" filter="url(#shadow)">
-    <circle cx="96" cy="89" r="24" fill="url(#cookie)"/>
-    <circle cx="86" cy="82" r="3.5" fill="#9A3412"/>
-    <circle cx="99" cy="96" r="4" fill="#9A3412"/>
-    <circle cx="87" cy="101" r="2.8" fill="#9A3412"/>
-    <circle cx="103" cy="79" r="2.8" fill="#9A3412"/>
+    <circle cx="101" cy="89" r="24" fill="url(#cookie)"/>
+    <circle cx="91" cy="82" r="3.5" fill="#9A3412"/>
+    <circle cx="104" cy="96" r="4" fill="#9A3412"/>
+    <circle cx="92" cy="101" r="2.8" fill="#9A3412"/>
+    <circle cx="108" cy="79" r="2.8" fill="#9A3412"/>
   </g>
 
   <path d="M27 19c16-12 52-13 72 0" fill="none" stroke="white" stroke-opacity=".2" stroke-width="4" stroke-linecap="round"/>
