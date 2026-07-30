@@ -5,8 +5,9 @@ import { StoreController } from '@store/store-controller';
 import { templateStore } from '@store/template-store';
 import { dataRecordStore } from '@store/data-record-store';
 import { fuzzySearch } from '@utils/fuzzy-search';
+import { downloadJson, parseJsonArray } from '@utils/json-file';
 import { type DataRecord, type Template } from '@app-types/models';
-import { type ColumnDef, type RowAction } from '@shared/data-table';
+import { type ColumnDef, type RowAction, type RowActionDetail } from '@shared/data-table';
 import '@shared/search-bar';
 import '@shared/data-table';
 import '@shared/batch-toolbar';
@@ -66,12 +67,12 @@ export class DataManagement extends LitElement {
     return fuzzySearch(this._records.state, this._searchQuery, ['name', 'url']);
   }
 
-  private _onSearch(e: CustomEvent) { this._searchQuery = e.detail.value; this.requestUpdate(); }
-  private _onSelection(e: CustomEvent) { this._selectedIds = e.detail; this.requestUpdate(); }
+  private _onSearch(e: CustomEvent<{ value: string }>) { this._searchQuery = e.detail.value; this.requestUpdate(); }
+  private _onSelection(e: CustomEvent<string[]>) { this._selectedIds = e.detail; this.requestUpdate(); }
 
-  private _onRowAction(e: CustomEvent) {
+  private _onRowAction(e: CustomEvent<RowActionDetail>) {
     const { action, row } = e.detail;
-    const record = row as unknown as DataRecord;
+    const record = row as DataRecord;
     switch (action) {
       case 'edit': this._editData = record; this._wizard.mode = 'edit'; this._wizard.open(record); break;
       case 'copy':
@@ -114,15 +115,19 @@ export class DataManagement extends LitElement {
     }
   }
 
-  private async _onDataSubmit(e: CustomEvent) {
-    const detail = e.detail as Omit<DataRecord, 'id' | 'order' | 'createdAt' | 'updatedAt'>;
+  private async _onDataSubmit(
+    e: CustomEvent<Omit<DataRecord, 'id' | 'order' | 'createdAt' | 'updatedAt'>>
+  ) {
+    const detail = e.detail;
     if (this._editData) await dataRecordStore.update(this._editData.id, detail);
     else await dataRecordStore.add(detail);
     this._editData = undefined;
   }
 
-  private async _onExtractSubmit(e: CustomEvent) {
-    const detail = e.detail as Omit<Template, 'id' | 'createdAt' | 'updatedAt'>;
+  private async _onExtractSubmit(
+    e: CustomEvent<Omit<Template, 'id' | 'createdAt' | 'updatedAt'>>
+  ) {
+    const detail = e.detail;
     await templateStore.add(detail);
     const { showToast } = await import('@shared/toast-notification');
     showToast(this._i18n.t('data.templateExtracted'), 'success');
@@ -131,18 +136,12 @@ export class DataManagement extends LitElement {
   private _onBatchExport() { this._exportSelection(this._selectedIds); }
   private _exportSelection(ids: string[]) {
     const items = this._records.state.filter((r) => ids.includes(r.id));
-    if (!items.length) return;
-    const blob = new Blob([JSON.stringify(items, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = `data-records-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click(); URL.revokeObjectURL(url);
+    downloadJson(items, 'data-records');
   }
 
-  private async _onBatchImport(e: CustomEvent) {
+  private async _onBatchImport(e: CustomEvent<{ content: string }>) {
     try {
-      const items = JSON.parse(e.detail.content) as DataRecord[];
-      if (!Array.isArray(items)) throw new Error('Invalid format');
+      const items = parseJsonArray<DataRecord>(e.detail.content);
       const count = await dataRecordStore.importFrom(items);
       const { showToast } = await import('@shared/toast-notification');
       showToast(this._i18n.t('data.imported', { count }), 'success');
@@ -161,8 +160,6 @@ export class DataManagement extends LitElement {
 
   private _openAdd() { this._editData = undefined; this._wizard.mode = 'add'; this._wizard.open(); }
 
-  connectedCallback() { super.connectedCallback(); this._records.load(); }
-
   render() {
     const filtered = this._filtered;
     return html`
@@ -180,7 +177,7 @@ export class DataManagement extends LitElement {
       </div>
       <data-table
         .columns=${this._columns}
-        .rows=${filtered as unknown as Record<string, any>[]}
+        .rows=${filtered}
         .selectedIds=${this._selectedIds}
         .rowActions=${this._actions}
         .actionsHeader=${this._i18n.t('config.actions')}

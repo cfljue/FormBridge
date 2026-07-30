@@ -13,6 +13,8 @@ export interface FormConfigData {
   buttonSelector: string;
 }
 
+type TextFieldKey = 'name' | 'description' | 'url' | 'buttonName' | 'buttonSelector';
+
 @customElement('form-config')
 export class FormConfig extends LitElement {
   static styles = css`
@@ -66,8 +68,8 @@ export class FormConfig extends LitElement {
     }));
   }
 
-  private _onInput(field: keyof this, e: Event) {
-    (this as any)[field] = (e.target as HTMLInputElement).value;
+  private _onInput(field: TextFieldKey, e: Event) {
+    this[field] = (e.target as HTMLInputElement).value;
     this._notify();
   }
 

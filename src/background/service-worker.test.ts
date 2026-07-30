@@ -35,6 +35,7 @@ vi.mock('@services/chrome-cookies', () => ({
 
 vi.mock('@services/chrome-tabs', () => ({
   sendToTab: mockSendToTab,
+  sendToTabWithInjectionRetry: mockSendToTab,
 }));
 
 // --- Module under test ---

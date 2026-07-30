@@ -13,6 +13,13 @@ export interface RowAction {
   label: string;
 }
 
+export type TableRow = object;
+
+export interface RowActionDetail {
+  action: string;
+  row: TableRow;
+}
+
 @customElement('data-table')
 export class DataTable extends LitElement {
   static styles = css`
@@ -45,7 +52,7 @@ export class DataTable extends LitElement {
   `;
 
   @property({ type: Array }) columns: ColumnDef[] = [];
-  @property({ type: Array }) rows: Record<string, any>[] = [];
+  @property({ type: Array }) rows: TableRow[] = [];
   @property({ type: Array }) selectedIds: string[] = [];
   @property({ type: String }) idKey = 'id';
   @property({ type: Array }) rowActions: RowAction[] = [];
@@ -57,7 +64,7 @@ export class DataTable extends LitElement {
 
   private _toggleSelectAll(e: Event) {
     const checked = (e.target as HTMLInputElement).checked;
-    this.selectedIds = checked ? this.rows.map((r) => r[this.idKey] as string) : [];
+    this.selectedIds = checked ? this.rows.map((row) => this._rowId(row)) : [];
     this._emitSelection();
   }
 
@@ -85,22 +92,31 @@ export class DataTable extends LitElement {
     }
   }
 
-  private _emitAction(action: string, row: Record<string, any>) {
-    this.dispatchEvent(new CustomEvent('row-action', { detail: { action, row }, bubbles: true, composed: true }));
+  private _emitAction(action: string, row: TableRow) {
+    const detail: RowActionDetail = { action, row };
+    this.dispatchEvent(new CustomEvent<RowActionDetail>('row-action', { detail, bubbles: true, composed: true }));
+  }
+
+  private _cell(row: TableRow, key: string): unknown {
+    return (row as Record<string, unknown>)[key];
+  }
+
+  private _rowId(row: TableRow): string {
+    return String(this._cell(row, this.idKey) ?? '');
   }
 
   private get _sortedRows() {
     if (!this.sortKey) return this.rows;
     return [...this.rows].sort((a, b) => {
-      const va = String(a[this.sortKey] ?? '');
-      const vb = String(b[this.sortKey] ?? '');
+      const va = String(this._cell(a, this.sortKey) ?? '');
+      const vb = String(this._cell(b, this.sortKey) ?? '');
       const cmp = va.localeCompare(vb);
       return this.sortDir === 'asc' ? cmp : -cmp;
     });
   }
 
   render() {
-    const allSelected = this.rows.length > 0 && this.rows.every((r) => this.selectedIds.includes(r[this.idKey] as string));
+    const allSelected = this.rows.length > 0 && this.rows.every((row) => this.selectedIds.includes(this._rowId(row)));
     const colSpan = this.columns.length + (this.showCheckbox ? 1 : 0) + (this.rowActions.length > 0 ? 1 : 0);
 
     return html`
@@ -120,8 +136,8 @@ export class DataTable extends LitElement {
         <tbody>
           ${this._sortedRows.map((row) => html`
             <tr>
-              ${this.showCheckbox ? html`<td class="check-col"><input type="checkbox" .checked=${this.selectedIds.includes(row[this.idKey] as string)} @change=${() => this._toggleOne(row[this.idKey] as string)} /></td>` : ''}
-              ${this.columns.map((c) => html`<td title=${String(row[c.key] ?? '')}>${row[c.key]}</td>`)}
+              ${this.showCheckbox ? html`<td class="check-col"><input type="checkbox" .checked=${this.selectedIds.includes(this._rowId(row))} @change=${() => this._toggleOne(this._rowId(row))} /></td>` : ''}
+              ${this.columns.map((c) => html`<td title=${String(this._cell(row, c.key) ?? '')}>${this._cell(row, c.key)}</td>`)}
               ${this.rowActions.length > 0 ? html`
                 <td>
                   <div class="actions">

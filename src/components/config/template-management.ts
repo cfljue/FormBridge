@@ -4,8 +4,9 @@ import { I18nController } from '@i18n/index';
 import { StoreController } from '@store/store-controller';
 import { templateStore } from '@store/template-store';
 import { fuzzySearch } from '@utils/fuzzy-search';
+import { downloadJson, parseJsonArray } from '@utils/json-file';
 import { type Template } from '@app-types/models';
-import { type ColumnDef, type RowAction } from '@shared/data-table';
+import { type ColumnDef, type RowAction, type RowActionDetail } from '@shared/data-table';
 import '@shared/search-bar';
 import '@shared/data-table';
 import '@shared/batch-toolbar';
@@ -58,16 +59,16 @@ export class TemplateManagement extends LitElement {
     ];
   }
 
-  private get _filtered(): Record<string, any>[] {
-    return fuzzySearch(this._templates.state, this._searchQuery, ['name', 'description', 'url']) as unknown as Record<string, any>[];
+  private get _filtered(): Template[] {
+    return fuzzySearch(this._templates.state, this._searchQuery, ['name', 'description', 'url']);
   }
 
-  private _onSearch(e: CustomEvent) { this._searchQuery = e.detail.value; this.requestUpdate(); }
-  private _onSelection(e: CustomEvent) { this._selectedIds = e.detail; this.requestUpdate(); }
+  private _onSearch(e: CustomEvent<{ value: string }>) { this._searchQuery = e.detail.value; this.requestUpdate(); }
+  private _onSelection(e: CustomEvent<string[]>) { this._selectedIds = e.detail; this.requestUpdate(); }
 
-  private _onRowAction(e: CustomEvent) {
+  private _onRowAction(e: CustomEvent<RowActionDetail>) {
     const { action, row } = e.detail;
-    const template = row as unknown as Template;
+    const template = row as Template;
     switch (action) {
       case 'edit': this._editData = template; this._modal.mode = 'edit'; this._modal.open(template); break;
       case 'copy': this._editData = undefined; this._modal.mode = 'copy'; this._modal.open({ ...template, name: template.name + ' (Copy)' }); break;
@@ -90,8 +91,10 @@ export class TemplateManagement extends LitElement {
     this.requestUpdate();
   }
 
-  private async _onTemplateSubmit(e: CustomEvent) {
-    const detail = e.detail as Omit<Template, 'id' | 'createdAt' | 'updatedAt'>;
+  private async _onTemplateSubmit(
+    e: CustomEvent<Omit<Template, 'id' | 'createdAt' | 'updatedAt'>>
+  ) {
+    const detail = e.detail;
     if (this._editData) await templateStore.update(this._editData.id, detail);
     else await templateStore.add(detail);
     this._editData = undefined;
@@ -100,18 +103,12 @@ export class TemplateManagement extends LitElement {
   private _onBatchExport() { this._exportSelection(this._selectedIds); }
   private _exportSelection(ids: string[]) {
     const items = this._templates.state.filter((t) => ids.includes(t.id));
-    if (!items.length) return;
-    const blob = new Blob([JSON.stringify(items, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = `templates-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click(); URL.revokeObjectURL(url);
+    downloadJson(items, 'templates');
   }
 
-  private async _onBatchImport(e: CustomEvent) {
+  private async _onBatchImport(e: CustomEvent<{ content: string }>) {
     try {
-      const items = JSON.parse(e.detail.content) as Template[];
-      if (!Array.isArray(items)) throw new Error('Invalid format');
+      const items = parseJsonArray<Template>(e.detail.content);
       const count = await templateStore.importFrom(items);
       const { showToast } = await import('@shared/toast-notification');
       showToast(this._i18n.t('template.imported', { count }), 'success');
@@ -129,8 +126,6 @@ export class TemplateManagement extends LitElement {
   }
 
   private _openAdd() { this._editData = undefined; this._modal.mode = 'add'; this._modal.open(); }
-
-  connectedCallback() { super.connectedCallback(); this._templates.load(); }
 
   render() {
     const filtered = this._filtered;

@@ -62,24 +62,11 @@ export interface ClearCookiesResponse {
   message: string;
 }
 
-export type MessageAction =
-  | 'GET_PAGE_STORAGE'
-  | 'SET_PAGE_STORAGE'
-  | 'COPY_COOKIES'
-  | 'PASTE_COOKIES'
-  | 'CLEAR_COOKIES'
-  | 'AUTO_FILL_FORM'
-  | 'GET_ACTIVE_TAB_INFO';
-
-export type MessagePayload =
-  | GetStoragePayload
-  | SetStoragePayload
-  | CopyCookiesPayload
-  | PasteCookiesPayload
-  | ClearCookiesPayload
-  | AutoFillPayload;
-
-export interface ExtensionMessage {
-  action: MessageAction;
-  payload?: MessagePayload;
-}
+export type ExtensionMessage =
+  | { action: 'GET_PAGE_STORAGE' }
+  | { action: 'SET_PAGE_STORAGE'; payload: SetStoragePayload }
+  | { action: 'COPY_COOKIES'; payload?: CopyCookiesPayload }
+  | { action: 'PASTE_COOKIES'; payload?: PasteCookiesPayload }
+  | { action: 'CLEAR_COOKIES'; payload?: ClearCookiesPayload }
+  | { action: 'AUTO_FILL_FORM'; payload: AutoFillPayload }
+  | { action: 'GET_ACTIVE_TAB_INFO' };

@@ -1,4 +1,4 @@
-import { type ExtensionMessage, type AutoFillPayload, type AutoFillResponse } from '@app-types/messages';
+import { type ExtensionMessage, type AutoFillResponse } from '@app-types/messages';
 
 function getAllStorage(storage: Storage): Record<string, string> {
   const result: Record<string, string> = {};
@@ -32,14 +32,14 @@ async function handleContentMessage(message: ExtensionMessage): Promise<unknown>
       };
 
     case 'SET_PAGE_STORAGE': {
-      const p = message.payload as { localStorage: Record<string, string>; sessionStorage: Record<string, string> };
+      const p = message.payload;
       if (p.localStorage) setAllStorage(window.localStorage, p.localStorage);
       if (p.sessionStorage) setAllStorage(window.sessionStorage, p.sessionStorage);
       return { success: true };
     }
 
     case 'AUTO_FILL_FORM': {
-      const p = message.payload as AutoFillPayload;
+      const p = message.payload;
       const record = p.record;
       const result: AutoFillResponse = { filled: 0, failed: 0, failedFields: [], selectorMissed: [], clicked: false };
 

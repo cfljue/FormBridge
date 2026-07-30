@@ -1,6 +1,6 @@
 import { type CookieSnapshot } from '@app-types/models';
 import { getAllCookies } from './chrome-cookies';
-import { sendToTab } from './chrome-tabs';
+import { sendToTabWithInjectionRetry } from './chrome-tabs';
 
 const SNAPSHOT_KEY = 'cookieSnapshot';
 
@@ -24,18 +24,10 @@ export async function captureFromTab(tabId: number, url: string): Promise<Cookie
     let ls: Record<string, string> = {};
     let ss: Record<string, string> = {};
     const storageMsg = { action: 'GET_PAGE_STORAGE' as const };
-    let storageResp = await sendToTab<{ localStorage: Record<string, string>; sessionStorage: Record<string, string> }>(tabId, storageMsg);
-    if (!storageResp) {
-      // Content script not loaded — inject and retry
-      try {
-        const manifest = chrome.runtime.getManifest();
-        const csFiles = manifest.content_scripts?.[0]?.js ?? [];
-        if (csFiles.length > 0) {
-          await chrome.scripting.executeScript({ target: { tabId }, files: csFiles });
-          storageResp = await sendToTab<{ localStorage: Record<string, string>; sessionStorage: Record<string, string> }>(tabId, storageMsg);
-        }
-      } catch { /* still fail */ }
-    }
+    const storageResp = await sendToTabWithInjectionRetry<{
+      localStorage: Record<string, string>;
+      sessionStorage: Record<string, string>;
+    }>(tabId, storageMsg);
     if (storageResp) {
       ls = storageResp.localStorage ?? {};
       ss = storageResp.sessionStorage ?? {};

@@ -1,8 +1,7 @@
-import { type ExtensionMessage, type AutoFillPayload, type AutoFillResponse } from '@app-types/messages';
-import { type CookieSnapshot, type DataRecord } from '@app-types/models';
+import { type ExtensionMessage, type AutoFillResponse } from '@app-types/messages';
 import { captureFromTab, getSnapshot, clearSnapshot } from '@services/clipboard-service';
 import { setCookiesBatch, removeAllCookies } from '@services/chrome-cookies';
-import { sendToTab } from '@services/chrome-tabs';
+import { sendToTabWithInjectionRetry } from '@services/chrome-tabs';
 
 // Initialize default settings on install
 chrome.runtime.onInstalled.addListener(async () => {
@@ -21,12 +20,9 @@ export async function handleMessage(
   message: ExtensionMessage,
   sender: chrome.runtime.MessageSender
 ): Promise<unknown> {
-  const { action, payload } = message;
-
-  switch (action) {
+  switch (message.action) {
     case 'COPY_COOKIES': {
-      const p = payload as { tabId?: number } | undefined;
-      const tabId = p?.tabId ?? sender.tab?.id;
+      const tabId = message.payload?.tabId ?? sender.tab?.id;
       if (!tabId) return { success: false, message: 'No tab' };
       const tab = await chrome.tabs.get(tabId);
       if (!tab.url) return { success: false, message: 'No URL' };
@@ -40,8 +36,7 @@ export async function handleMessage(
     }
 
     case 'PASTE_COOKIES': {
-      const p = payload as { tabId?: number } | undefined;
-      const tabId = p?.tabId ?? sender.tab?.id;
+      const tabId = message.payload?.tabId ?? sender.tab?.id;
       if (!tabId) return { success: false, message: 'No tab' };
       const snapshot = await getSnapshot();
       if (!snapshot) return { success: false, message: 'No snapshot. Copy first (Ctrl+C).' };
@@ -63,18 +58,7 @@ export async function handleMessage(
           action: 'SET_PAGE_STORAGE' as const,
           payload: { tabId, localStorage: snapshot.localStorage, sessionStorage: snapshot.sessionStorage },
         };
-        let resp = await sendToTab(tabId, storagePayload);
-        if (!resp) {
-          // Content script not loaded — inject and retry
-          try {
-            const manifest = chrome.runtime.getManifest();
-            const csFiles = manifest.content_scripts?.[0]?.js ?? [];
-            if (csFiles.length > 0) {
-              await chrome.scripting.executeScript({ target: { tabId }, files: csFiles });
-              resp = await sendToTab(tabId, storagePayload);
-            }
-          } catch { /* still fail */ }
-        }
+        const resp = await sendToTabWithInjectionRetry(tabId, storagePayload);
         storageOk = !!resp;
       }
       storageOk = storageOk || storageKeys === 0;
@@ -95,8 +79,7 @@ export async function handleMessage(
     }
 
     case 'CLEAR_COOKIES': {
-      const p = payload as { tabId?: number } | undefined;
-      const tabId = p?.tabId ?? sender.tab?.id;
+      const tabId = message.payload?.tabId ?? sender.tab?.id;
       if (!tabId) return { success: false, removed: 0, failed: 0, message: 'No tab' };
       const tab = await chrome.tabs.get(tabId);
       if (!tab.url) return { success: false, removed: 0, failed: 0, message: 'No URL' };
@@ -112,32 +95,14 @@ export async function handleMessage(
     }
 
     case 'AUTO_FILL_FORM': {
-      const p = payload as AutoFillPayload;
+      const p = message.payload;
       const tab = await chrome.tabs.get(p.tabId);
       if (!tab.id) return { success: false, message: 'Tab not found' };
 
-      let response = await sendToTab<AutoFillResponse>(p.tabId, {
+      const response = await sendToTabWithInjectionRetry<AutoFillResponse>(p.tabId, {
         action: 'AUTO_FILL_FORM',
         payload: p,
       });
-
-      if (!response) {
-        // Content script not loaded — inject and retry
-        try {
-          const manifest = chrome.runtime.getManifest();
-          const csFiles = manifest.content_scripts?.[0]?.js ?? [];
-          if (csFiles.length > 0) {
-            await chrome.scripting.executeScript({
-              target: { tabId: p.tabId },
-              files: csFiles,
-            });
-            response = await sendToTab<AutoFillResponse>(p.tabId, {
-              action: 'AUTO_FILL_FORM',
-              payload: p,
-            });
-          }
-        } catch { /* still fail */ }
-      }
 
       if (!response) return { success: false, message: 'Content script not loaded. Please refresh the target page.' };
       const total = response.filled + response.selectorMissed.length + response.failed;
