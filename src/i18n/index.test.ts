@@ -46,6 +46,14 @@ describe('i18n', () => {
       const result = t('popup.fillPartial' as TranslationKey, { filled: 3, total: 5, missed: 2 });
       expect(result).toBe('已填充 3/5 个字段。未命中: 2');
     });
+
+    it('provides an Agent prompt that asks for the URL and optional description first', () => {
+      const prompt = t('config.skillPrompt');
+      expect(prompt).toContain('github.com/cfljue/FormBridge/tree/main/skills/extract-login-form');
+      expect(prompt).toContain('first ask me only two questions');
+      expect(prompt).toContain('target page URL');
+      expect(prompt).toContain('description');
+    });
   });
 
   describe('setLocale / getLocale', () => {

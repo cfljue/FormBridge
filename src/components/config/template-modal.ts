@@ -8,6 +8,7 @@ import { parseTemplateJson } from '@utils/direct-json-import';
 import '@shared/form-config';
 import '@shared/form-mode-tabs';
 import '@shared/json-import-editor';
+import '@shared/skill-prompt-card';
 import '@shared/modal-dialog';
 
 let _templateDraft: FormConfigData | null = null;
@@ -148,6 +149,16 @@ export class TemplateModal extends LitElement {
           .jsonLabel=${this._i18n.t('config.modeJson')}
           @mode-change=${this._onModeChange}
         ></form-mode-tabs>
+        ${this.mode === 'add' ? html`
+          <skill-prompt-card
+            .title=${this._i18n.t('config.skillPromptTitle')}
+            .description=${this._i18n.t('config.skillPrompt')}
+            .prompt=${this._i18n.t('config.skillPrompt')}
+            .copyLabel=${this._i18n.t('config.skillPromptCopy')}
+            .copiedLabel=${this._i18n.t('config.skillPromptCopied')}
+            .failedLabel=${this._i18n.t('config.skillPromptCopyFailed')}
+          ></skill-prompt-card>
+        ` : null}
         ${this._inputMode === 'form' ? html`
           <form-config
             mode="definition"

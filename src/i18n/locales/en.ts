@@ -47,6 +47,11 @@ export default {
   'config.jsonTemplatePlaceholder': '[{ "name": "Login", "fields": [] }]',
   'config.jsonDataPlaceholder': '[{ "name": "Dev account", "values": [] }]',
   'config.jsonInvalid': 'Invalid JSON. Check the structure and try again.',
+  'config.skillPromptTitle': 'Let your Agent extract the form',
+  'config.skillPrompt': 'Get FormBridge\'s extract-login-form Skill from https://github.com/cfljue/FormBridge/tree/main/skills/extract-login-form. If your environment supports installing Skills, install and use it; otherwise, read SKILL.md in that directory and follow its instructions. Before analyzing anything, first ask me only two questions: (1) What is the target page URL? (2) Do I have any description of the page or target login mode? The description is optional. After I answer, run the Skill and return JSON that I can paste directly into FormBridge\'s JSON Import tab.',
+  'config.skillPromptCopy': 'Copy Agent prompt',
+  'config.skillPromptCopied': 'Prompt copied',
+  'config.skillPromptCopyFailed': 'Copy failed',
 
   // Template Form
   'template.new': 'New Template',

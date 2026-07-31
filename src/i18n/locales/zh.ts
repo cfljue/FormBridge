@@ -47,6 +47,11 @@ export default {
   'config.jsonTemplatePlaceholder': '[{ "name": "登录", "fields": [] }]',
   'config.jsonDataPlaceholder': '[{ "name": "开发账号", "values": [] }]',
   'config.jsonInvalid': 'JSON 无效，请检查结构后重试。',
+  'config.skillPromptTitle': '让 Agent 帮你提取表单',
+  'config.skillPrompt': '请从 https://github.com/cfljue/FormBridge/tree/main/skills/extract-login-form 获取 FormBridge 的 extract-login-form Skill。如果你的环境支持安装 Skill，请安装后使用；否则请阅读该目录中的 SKILL.md 并按其说明执行。在执行任何页面分析前，请先只询问我两个问题：1）目标页面链接是什么；2）我是否有页面特征或目标登录模式的描述（可以不提供）。收到我的回答后再执行 Skill，并直接返回可粘贴到 FormBridge“JSON 导入”页签的 JSON。',
+  'config.skillPromptCopy': '复制 Agent 指令',
+  'config.skillPromptCopied': '指令已复制',
+  'config.skillPromptCopyFailed': '复制失败',
 
   // Template Form
   'template.new': '新建模板',
