@@ -5,3 +5,7 @@ node_modules/
 Thumbs.db
 .chrome-test-profile/
 test-cdp.mjs
+task_plan.md
+findings.md
+progress.md
+release/

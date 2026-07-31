@@ -6,13 +6,28 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run typecheck && npm test && npm run build",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "chrome-extension",
+    "autofill",
+    "cookies",
+    "local-storage",
+    "manifest-v3"
+  ],
+  "homepage": "https://github.com/cfljue/FormBridge#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cfljue/FormBridge.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cfljue/FormBridge/issues"
+  },
   "license": "ISC",
   "dependencies": {
     "lit": "^3.3.3"

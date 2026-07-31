@@ -1,91 +1,107 @@
-# FormBridge
+<p align="center">
+  <img src="public/icons/icon-128.png" width="112" height="112" alt="FormBridge icon">
+</p>
 
-Chrome 扩展（Manifest V3），面向开发者的表单管理工具箱。
+<h1 align="center">FormBridge</h1>
 
-## 功能
+<p align="center"><strong>Move browser context between environments. Fill repetitive forms in seconds.</strong></p>
 
-- **Cookie / Storage 跨域搬运**：弹窗中 Ctrl+C 捕获当前页面所有 Cookie（含 HttpOnly、Secure）、localStorage、sessionStorage；切换到目标页面 Ctrl+V 一键写入并刷新。粘贴后自动清除快照。Ctrl+D 清空当前页面所有 Cookie 并刷新。
-- **表单自动填充**：基于 CSS 选择器的精准填充，支持 name/placeholder/label/aria-label 兜底匹配，兼容 React/Vue 框架事件。可选择器未命中时黄色警告。
-- **数据面板**：弹窗内数据卡片网格，按当前页 URL 智能匹配排序，支持拖拽排序、搜索过滤、一键填充跳转。
-- **模板管理**：可复用的表单模板（字段名 + CSS 选择器 + 按钮配置），支持导入/导出 JSON。
-- **中英双语**：运行时切换，弹窗和配置页状态同步。
+<p align="center">
+  <a href="https://github.com/cfljue/FormBridge/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/cfljue/FormBridge/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://github.com/cfljue/FormBridge/releases"><img alt="GitHub release" src="https://img.shields.io/github/v/release/cfljue/FormBridge"></a>
+  <a href="LICENSE"><img alt="ISC license" src="https://img.shields.io/badge/license-ISC-2f9e62"></a>
+  <img alt="Chrome Manifest V3" src="https://img.shields.io/badge/Chrome-Manifest_V3-34a66a">
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-strict-3178c6">
+</p>
 
-## 技术栈
+<p align="center"><a href="README.zh-CN.md">简体中文</a></p>
 
-- **Web Components**: Lit Element 3
-- **构建**: Vite 7 + @crxjs/vite-plugin（Manifest V3）
-- **语言**: TypeScript strict mode
-- **测试**: Vitest + happy-dom（79 个用例）
-- **存储**: chrome.storage.local
-- **包管理**: npm
+FormBridge is a local-first Chrome extension for developers, testers, support teams, and anyone who repeatedly works with browser forms. It copies cookies and Web Storage from one page to another, stores reusable form profiles, and fills matching pages without sending your data to a remote service.
 
-## 快速开始
+> FormBridge can expose authenticated browser state on the destination site. Use it only with accounts and environments you are authorized to access.
+
+## Why FormBridge?
+
+- **Move browser context** — capture cookies, `localStorage`, and `sessionStorage`, then paste them into another page.
+- **Fill forms reliably** — target fields with CSS selectors, with fallbacks for name, placeholder, label, and `aria-label`.
+- **Reuse structured profiles** — create templates and data records, search them, reorder cards, and import or export JSON.
+- **Work with modern apps** — form updates dispatch the events expected by React, Vue, and similar frameworks.
+- **Keep data local** — records and snapshots stay in Chrome extension storage; FormBridge has no analytics or external API calls.
+- **Switch languages at runtime** — English and Simplified Chinese are built in.
+
+## Screenshots
+
+Real product screenshots are being prepared for the first public release. See [`store-assets/screenshots/README.md`](store-assets/screenshots/README.md) for the exact capture checklist.
+
+## Install
+
+### GitHub Release
+
+1. Download `FormBridge-v1.0.0.zip` from the [latest release](https://github.com/cfljue/FormBridge/releases/latest).
+2. Extract the archive.
+3. Open `chrome://extensions` and enable **Developer mode**.
+4. Choose **Load unpacked** and select the extracted folder.
+
+Chrome Web Store distribution is planned. Until the listing is live, the release archive is intended for review and developer-mode installation.
+
+### Build from source
 
 ```bash
-# 安装依赖
-npm install
-
-# 开发构建
-npm run build
-
-# 运行测试
+npm ci
 npm test
-
-# 类型检查
-npx tsc --noEmit
+npm run build
 ```
 
-构建后在 Chrome 加载扩展：
-1. 打开 `chrome://extensions`
-2. 开启「开发者模式」
-3. 点击「加载已解压的扩展程序」
-4. 选择 `dist/` 目录
+Then load the generated `dist/` directory from `chrome://extensions`.
 
-## 使用指南
+## Quick start
 
-### 配置页（右键扩展图标 → 选项）
+1. Open the extension options and create a reusable form template.
+2. Add a data record based on that template.
+3. Open a matching page and choose the record from the FormBridge popup to fill it.
+4. To move browser context, enable Cookie Transfer, open the source page and press `Ctrl+C` in the popup; open the destination page and press `Ctrl+V`.
 
-1. 在「模板」tab 创建表单模板：填写名称、网址、描述，添加字段（字段名 + CSS 选择器），可选配置自动点击按钮
-2. 在「数据」tab 创建填充数据：下拉选择模板快速填表，填入各字段的实际值，保存
-3. 在「Cookie」tab 开启 Cookie 复制开关
+| Popup action | Result |
+| --- | --- |
+| Click a data card | Fill the current page |
+| Click a card URL | Open the saved URL in a new tab |
+| Drag a card | Change card order |
+| `Ctrl+C` | Capture cookies and Web Storage from the current page |
+| `Ctrl+V` | Replace destination cookies and restore Web Storage, then reload |
+| `Ctrl+D` | Clear cookies for the current page, then reload |
 
-### 弹窗（点击扩展图标）
+Keyboard shortcuts are ignored while a text field is focused. Cookie Transfer can be disabled at any time from settings.
 
-| 操作 | 效果 |
-|------|------|
-| 点击绿色卡片 | 自动填充表单 |
-| 点击卡片「网址」 | 新标签页打开 |
-| 拖拽卡片 | 自定义排序 |
-| 搜索框 | 按名称/网址过滤 |
-| Ctrl+C | 捕获当前页 Cookie + Storage |
-| Ctrl+V | 粘贴到当前页（需先 Ctrl+C） |
-| Ctrl+D | 清空当前页所有 Cookie 并刷新 |
-| 宽度选择器 | 400 / 600 / 800px |
+## Permissions
 
-### 提取模板
+FormBridge requests only the browser capabilities needed for its core workflows:
 
-在数据页中，对已有关联模板的数据记录点击「提取模板」，可将其字段和按钮配置反向导出为新模板。
+| Permission | Why it is needed |
+| --- | --- |
+| `storage` | Save templates, records, preferences, and the temporary transfer snapshot locally |
+| `cookies` | Read, replace, and clear cookies when you explicitly use Cookie Transfer |
+| `activeTab` | Identify and interact with the page you are currently using |
+| `scripting` | Restore page storage or fill a form when the content script needs to be injected |
+| `tabs` | Open saved URLs, read the active tab URL, and reload after a transfer |
+| `<all_urls>` | Allow the same user-created template and transfer workflow to work on any site you choose |
 
-## 项目结构
+Read the full [Privacy Policy](PRIVACY.md) and [Security Policy](SECURITY.md).
 
+## Development
+
+```bash
+npm run dev          # development server
+npm run test:watch   # watch tests
+npm run test:coverage
+npm run check        # type-check, test, and production build
 ```
-form-bridge/
-├── src/
-│   ├── background/        # Service Worker，消息路由
-│   ├── content/           # 注入页面的内容脚本
-│   ├── popup/             # 弹窗入口
-│   ├── config/            # 配置页入口
-│   ├── components/
-│   │   ├── shared/        # 公共组件（表格、弹窗、搜索栏、toast 等）
-│   │   ├── popup/         # 弹窗专用组件（数据卡片）
-│   │   └── config/        # 配置页专用组件（模板/数据管理）
-│   ├── store/             # 状态管理（BaseStore + 三个 Store 单例）
-│   ├── services/          # Chrome API 封装（storage/cookies/tabs/messaging）
-│   ├── types/             # TypeScript 类型定义
-│   ├── utils/             # 工具函数（URL 匹配、模糊搜索、防抖、ID 生成）
-│   └── i18n/              # 国际化（运行时切换中英文）
-├── public/icons/          # 扩展图标
-├── TEST_PLAN.md           # 手动测试清单
-├── AGENTS.md              # AI 编码助手项目指引
-└── vite.config.ts         # Vite 构建配置
-```
+
+The project uses TypeScript strict mode, Lit 3, Vite, CRXJS, and Vitest. Manual release checks are documented in [`TEST_PLAN.md`](TEST_PLAN.md).
+
+## Contributing
+
+Bug reports, focused feature proposals, documentation fixes, and pull requests are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md), follow the [Code of Conduct](CODE_OF_CONDUCT.md), and review the [changelog](CHANGELOG.md) before submitting a change.
+
+## License
+
+[ISC](LICENSE) © FormBridge contributors.
