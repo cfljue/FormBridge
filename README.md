@@ -18,6 +18,8 @@
 
 FormBridge is a local-first Chrome extension for developers, testers, support teams, and anyone who repeatedly works with browser forms. It copies cookies and Web Storage from one page to another, stores reusable form profiles, and fills matching pages without sending your data to a remote service.
 
+> **No external network access:** FormBridge does not connect to a developer-operated server, call external APIs, or include analytics, telemetry, or advertising. Templates, form values, settings, and transfer snapshots remain in Chrome's local extension storage. The extension only interacts with pages when you trigger its features.
+
 > FormBridge can expose authenticated browser state on the destination site. Use it only with accounts and environments you are authorized to access.
 
 ## Why FormBridge?
@@ -28,6 +30,20 @@ FormBridge is a local-first Chrome extension for developers, testers, support te
 - **Work with modern apps** — form updates dispatch the events expected by React, Vue, and similar frameworks.
 - **Keep data local** — records and snapshots stay in Chrome extension storage; FormBridge has no analytics or external API calls.
 - **Switch languages at runtime** — English and Simplified Chinese are built in.
+
+## Use cases
+
+### Repeated form submission and account switching
+
+Save reusable form templates and data records for pages that need to be submitted repeatedly. A typical development workflow is switching between multiple test accounts: keep a separate record for each account, then select the one you need from the popup instead of re-entering the same fields every time.
+
+### Local micro-frontend development
+
+Micro-frontend child applications often rely on a host application for login state and authorization, so they cannot run independently during local development. With FormBridge, an authorized developer can copy the target environment's cookies and Web Storage to the local development page, allowing the child application to run against the expected authenticated context without rebuilding login and authorization management locally.
+
+### Custom workflows and secondary development
+
+FormBridge is open source under the permissive [ISC License](LICENSE). Developers can audit the complete runtime behavior, adapt templates and transfer logic to internal workflows, or use the codebase as the foundation for a customized extension. If you redistribute a modified version, keep the required copyright and license notice and clearly document any behavior or privacy changes you introduce.
 
 ## Screenshots
 
