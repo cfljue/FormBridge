@@ -45,6 +45,19 @@ Micro-frontend child applications often rely on a host application for login sta
 
 FormBridge is open source under the permissive [ISC License](LICENSE). Developers can audit the complete runtime behavior, adapt templates and transfer logic to internal workflows, or use the codebase as the foundation for a customized extension. If you redistribute a modified version, keep the required copyright and license notice and clearly document any behavior or privacy changes you introduce.
 
+## Companion Skill: extract login forms automatically
+
+The repository includes [`extract-login-form`](skills/extract-login-form/SKILL.md), a reusable Codex Skill powered by a plain JavaScript Playwright script. Give it a login-page URL and, optionally, a rough description of the target form. It detects login fields and submit buttons, ranks ambiguous forms, and returns a FormBridge-compatible template JSON directly in the conversation—without reading field values, submitting the form, or collecting cookies and browser storage. Copy the result into a template dialog's **JSON Import** tab; no file download is required.
+
+It supports late-rendered SPAs, attached iframes, and observation mode for multi-step login pages. Developers can use or customize the Skill independently from the extension.
+
+```bash
+npm ci
+npx playwright install chromium
+```
+
+Then ask Codex: `Use the skill at skills/extract-login-form to analyze https://example.com/login.` To invoke it as `$extract-login-form` from any project, copy or link the Skill folder into your personal Codex skills directory.
+
 ## Screenshots
 
 Real product screenshots are being prepared for the first public release. See [`store-assets/screenshots/README.md`](store-assets/screenshots/README.md) for the exact capture checklist.
@@ -109,6 +122,7 @@ Read the full [Privacy Policy](PRIVACY.md) and [Security Policy](SECURITY.md).
 npm run dev          # development server
 npm run test:watch   # watch tests
 npm run test:coverage
+npm run test:skill   # verify the Playwright form-analysis Skill
 npm run check        # type-check, test, and production build
 ```
 

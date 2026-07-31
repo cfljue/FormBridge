@@ -5,7 +5,11 @@ import { StoreController } from '@store/store-controller';
 import { templateStore } from '@store/template-store';
 import { type DataRecord, type DataFieldValue, type Template } from '@app-types/models';
 import { type FormConfigData } from '@shared/form-config';
+import { type FormInputMode } from '@shared/form-mode-tabs';
+import { parseDataRecordJson } from '@utils/direct-json-import';
 import '@shared/form-config';
+import '@shared/form-mode-tabs';
+import '@shared/json-import-editor';
 import '@shared/modal-dialog';
 
 let _dataDraft: (FormConfigData & { templateId: string }) | null = null;
@@ -42,6 +46,10 @@ export class DataWizard extends LitElement {
   private _selectedTemplateId = '';
   private _restoring = false;
   private _formData: FormConfigData = { name: '', description: '', url: '', fields: [], buttonName: '', buttonSelector: '' };
+  private _inputMode: FormInputMode = 'form';
+  private _jsonText = '';
+  private _jsonError = '';
+  private _jsonDirty = false;
 
   open(record?: DataRecord) {
     this._selectedTemplateId = '';
@@ -70,6 +78,10 @@ export class DataWizard extends LitElement {
     } else {
       this._formData = { name: '', description: '', url: '', fields: [], buttonName: '', buttonSelector: '' };
     }
+    this._inputMode = 'form';
+    this._jsonText = this._serializeFormData();
+    this._jsonError = '';
+    this._jsonDirty = false;
     this.requestUpdate();
     const modal = this.renderRoot.querySelector('#modal') as HTMLElement & { open: boolean };
     if (modal) modal.open = true;
@@ -129,11 +141,56 @@ export class DataWizard extends LitElement {
     this.requestUpdate();
   }
 
+  private _serializeFormData() {
+    const d = this._formData;
+    return JSON.stringify([{
+      name: d.name,
+      description: d.description,
+      url: d.url,
+      templateId: this._selectedTemplateId,
+      values: d.fields.map((field) => ({
+        name: field.name,
+        selector: field.selector ?? '',
+        value: field.value ?? '',
+      })),
+      ...(d.buttonName ? { buttonName: d.buttonName } : {}),
+      ...(d.buttonSelector ? { buttonSelector: d.buttonSelector } : {}),
+    }], null, 2);
+  }
+
+  private _onModeChange(event: CustomEvent<{ mode: FormInputMode }>) {
+    this._inputMode = event.detail.mode;
+    if (this._inputMode === 'json' && !this._jsonDirty) this._jsonText = this._serializeFormData();
+    this._jsonError = '';
+    this.requestUpdate();
+  }
+
+  private _onJsonChange(event: CustomEvent<{ value: string }>) {
+    this._jsonText = event.detail.value;
+    this._jsonError = '';
+    this._jsonDirty = true;
+    this.requestUpdate();
+  }
+
   private _saveDraft() {
     _dataDraft = { ...this._formData, fields: [...this._formData.fields], templateId: this._selectedTemplateId };
   }
 
   private _submit() {
+    if (this._inputMode === 'json') {
+      try {
+        const detail = parseDataRecordJson(this._jsonText);
+        this.dispatchEvent(new CustomEvent('data-submit', {
+          detail, bubbles: true, composed: true,
+        }));
+        this._clearDraft();
+        this.close();
+      } catch {
+        this._jsonError = this._i18n.t('config.jsonInvalid');
+        this.requestUpdate();
+      }
+      return;
+    }
     const d = this._formData;
     if (!d.name.trim()) return;
     const values: DataFieldValue[] = d.fields
@@ -162,28 +219,45 @@ export class DataWizard extends LitElement {
 
     return html`
       <modal-dialog id="modal" title=${title} size="large" @modal-close=${this.close}>
-        <div class="form-group">
-          <label>${this._i18n.t('data.selectTemplate')}</label>
-          <select @change=${this._onTemplateChange}>
-            <option value="" ?selected=${!this._selectedTemplateId}>${this._i18n.t('data.manual')}</option>
-            ${templates.map((t) => html`<option value=${t.id} ?selected=${this._selectedTemplateId === t.id}>${t.name}</option>`)}
-          </select>
-        </div>
+        <form-mode-tabs
+          .active=${this._inputMode}
+          .formLabel=${this._i18n.t('config.modeForm')}
+          .jsonLabel=${this._i18n.t('config.modeJson')}
+          @mode-change=${this._onModeChange}
+        ></form-mode-tabs>
+        ${this._inputMode === 'form' ? html`
+          <div class="form-group">
+            <label>${this._i18n.t('data.selectTemplate')}</label>
+            <select @change=${this._onTemplateChange}>
+              <option value="" ?selected=${!this._selectedTemplateId}>${this._i18n.t('data.manual')}</option>
+              ${templates.map((t) => html`<option value=${t.id} ?selected=${this._selectedTemplateId === t.id}>${t.name}</option>`)}
+            </select>
+          </div>
 
-        <form-config
-          mode="value"
-          .name=${this._formData.name}
-          .description=${this._formData.description}
-          .url=${this._formData.url}
-          .fields=${this._formData.fields}
-          .buttonName=${this._formData.buttonName}
-          .buttonSelector=${this._formData.buttonSelector}
-          @form-change=${this._onFormChange}
-        ></form-config>
+          <form-config
+            mode="value"
+            .name=${this._formData.name}
+            .description=${this._formData.description}
+            .url=${this._formData.url}
+            .fields=${this._formData.fields}
+            .buttonName=${this._formData.buttonName}
+            .buttonSelector=${this._formData.buttonSelector}
+            @form-change=${this._onFormChange}
+          ></form-config>
+        ` : html`
+          <json-import-editor
+            .label=${this._i18n.t('config.jsonLabel')}
+            .hint=${this._i18n.t('config.jsonHint')}
+            .placeholder=${this._i18n.t('config.jsonDataPlaceholder')}
+            .value=${this._jsonText}
+            .error=${this._jsonError}
+            @json-change=${this._onJsonChange}
+          ></json-import-editor>
+        `}
 
         <div slot="footer" style="margin-top:16px">
           <button class="btn-cancel" @click=${this.close}>${this._i18n.t('config.cancel')}</button>
-          <button class="btn-primary" @click=${this._submit} ?disabled=${!this._formData.name.trim()}>${this._i18n.t('config.save')}</button>
+          <button class="btn-primary" @click=${this._submit} ?disabled=${this._inputMode === 'form' ? !this._formData.name.trim() : !this._jsonText.trim()}>${this._i18n.t('config.save')}</button>
         </div>
       </modal-dialog>
     `;

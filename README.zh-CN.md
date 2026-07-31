@@ -44,6 +44,19 @@ FormBridge 是一款本地优先的 Chrome 扩展，适合开发、测试、支�
 
 FormBridge 采用宽松的 [ISC 许可证](LICENSE)开源。开发者可以审查完整的运行逻辑，根据团队内部流程调整模板、填充和迁移能力，也可以直接基于本项目代码开发定制版本。发布修改后的版本时，请保留许可证要求的版权与许可声明，并明确说明新增的行为或隐私变化。
 
+## 配套 Skill：自动提取登录表单
+
+仓库内提供了可复用的 [`extract-login-form`](skills/extract-login-form/SKILL.md) Codex Skill，底层仅使用原生 JavaScript 与 Playwright。只需提供登录页网址，也可以附带对目标表单的大致描述；Skill 会识别登录字段和提交按钮、对多个候选表单进行排序，并在对话中直接返回可导入 FormBridge 的模板 JSON。复制结果并粘贴到模板弹窗的“JSON 导入”页签即可，无需下载文件。整个过程不会读取字段值、提交表单，也不会采集 Cookie 或浏览器存储。
+
+该 Skill 支持延迟渲染的 SPA、iframe 分析和多步骤登录页观察模式，也可以脱离扩展单独定制或二次开发。
+
+```bash
+npm ci
+npx playwright install chromium
+```
+
+然后可以告诉 Codex：`使用 skills/extract-login-form 下的 Skill 分析 https://example.com/login`。如果希望在任意项目中通过 `$extract-login-form` 调用，可将该 Skill 目录复制或链接到个人 Codex skills 目录。
+
 ## 界面截图
 
 首个公开版本的真实界面截图正在准备中。截图尺寸和内容清单见 [`store-assets/screenshots/README.md`](store-assets/screenshots/README.md)。
@@ -106,6 +119,7 @@ npm run build
 npm run dev
 npm run test:watch
 npm run test:coverage
+npm run test:skill   # 验证 Playwright 表单分析 Skill
 npm run check        # 类型检查、测试和生产构建
 ```
 

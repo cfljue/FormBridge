@@ -10,6 +10,7 @@
     "check": "npm run typecheck && npm test && npm run build",
     "preview": "vite preview",
     "test": "vitest run",
+    "test:skill": "node skills/extract-login-form/scripts/analyze-login-form.test.mjs",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
   },
@@ -38,6 +39,7 @@
     "@vitest/coverage-v8": "^4.1.7",
     "esbuild": "^0.28.0",
     "happy-dom": "^20.9.0",
+    "playwright": "^1.62.1",
     "terser": "^5.47.1",
     "typescript": "^6.0.3",
     "vite": "^7.3.3",

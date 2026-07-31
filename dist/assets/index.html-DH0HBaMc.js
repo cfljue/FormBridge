@@ -1,5 +1,5 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/toast-notification-Di32hrM7.js","assets/lit-D6WVJR7_.js"])))=>i.map(i=>d[i]);
-import{I as t,B as e,g as o,S as i,d as s,s as n,a}from"./toast-notification-Di32hrM7.js";import{i as r,n as l,a as d,b as c,t as p,e as h,r as g}from"./lit-D6WVJR7_.js";var u=Object.defineProperty,b=Object.getOwnPropertyDescriptor,f=(t,e,o,i)=>{for(var s,n=i>1?void 0:i?b(e,o):e,a=t.length-1;a>=0;a--)(s=t[a])&&(n=(i?s(e,o,n):s(n))||n);return i&&n&&u(e,o,n),n};let m=class extends d{constructor(){super(...arguments),this._i18n=new t(this),this.active="data"}_select(t){this.active=t,this.dispatchEvent(new CustomEvent("tab-change",{detail:t,bubbles:!0,composed:!0}))}render(){return c`
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/toast-notification-WwcTRqnw.js","assets/lit-D6WVJR7_.js"])))=>i.map(i=>d[i]);
+import{I as t,B as e,g as o,S as i,d as s,s as n,a as r}from"./toast-notification-WwcTRqnw.js";import{i as a,n as l,a as d,b as c,t as p,e as h,r as u}from"./lit-D6WVJR7_.js";var g=Object.defineProperty,b=Object.getOwnPropertyDescriptor,m=(t,e,o,i)=>{for(var s,n=i>1?void 0:i?b(e,o):e,r=t.length-1;r>=0;r--)(s=t[r])&&(n=(i?s(e,o,n):s(n))||n);return i&&n&&g(e,o,n),n};let f=class extends d{constructor(){super(...arguments),this._i18n=new t(this),this.active="data"}_select(t){this.active=t,this.dispatchEvent(new CustomEvent("tab-change",{detail:t,bubbles:!0,composed:!0}))}render(){return c`
       <div class="brand">
         <img class="logo-icon" src="/icons/icon-48.png" alt="" />
         ${this._i18n.t("config.title")}
@@ -14,7 +14,7 @@ import{I as t,B as e,g as o,S as i,d as s,s as n,a}from"./toast-notification-Di3
         <button class="guide-btn ${"guide"===this.active?"active":""}" @click=${()=>this._select("guide")}>${this._i18n.t("config.tabGuide")}</button>
         <button class="lang-btn" @click=${()=>this.dispatchEvent(new CustomEvent("toggle-lang",{bubbles:!0,composed:!0}))}>${this._i18n.t("lang.switch")}</button>
       </div>
-    `}};m.styles=r`
+    `}};f.styles=a`
     :host {
       display: flex; align-items: center; gap: 0; flex-shrink: 0;
       background: #f8fafc; border-bottom: 1px solid #e2e8f0;
@@ -58,7 +58,7 @@ import{I as t,B as e,g as o,S as i,d as s,s as n,a}from"./toast-notification-Di3
       transition: all 0.15s; white-space: nowrap;
     }
     .lang-btn:hover { border-color: #2563eb; color: #2563eb; background: #f8faff; }
-  `,f([l({type:String})],m.prototype,"active",2),m=f([p("tabs-nav")],m);const x={},y=function(t,e,o){let i=Promise.resolve();if(e&&e.length>0){let t=function(t){return Promise.all(t.map(t=>Promise.resolve(t).then(t=>({status:"fulfilled",value:t}),t=>({status:"rejected",reason:t}))))};document.getElementsByTagName("link");const o=document.querySelector("meta[property=csp-nonce]"),s=o?.nonce||o?.getAttribute("nonce");i=t(e.map(t=>{if((t=function(t){return"/"+t}(t))in x)return;x[t]=!0;const e=t.endsWith(".css"),o=e?'[rel="stylesheet"]':"";if(document.querySelector(`link[href="${t}"]${o}`))return;const i=document.createElement("link");return i.rel=e?"stylesheet":"modulepreload",e||(i.as="script"),i.crossOrigin="",i.href=t,s&&i.setAttribute("nonce",s),document.head.appendChild(i),e?new Promise((e,o)=>{i.addEventListener("load",e),i.addEventListener("error",()=>o(new Error(`Unable to preload CSS for ${t}`)))}):void 0}))}function s(t){const e=new Event("vite:preloadError",{cancelable:!0});if(e.payload=t,window.dispatchEvent(e),!e.defaultPrevented)throw t}return i.then(e=>{for(const t of e||[])"rejected"===t.status&&s(t.reason);return t().catch(s)})},_="templates";const w=new class extends e{constructor(){super([])}async load(){const t=await chrome.storage.local.get(_);this.replaceState(t[_]??[])}async persist(){await chrome.storage.local.set({[_]:this._state})}_newTemplate(t,e,i,s,n){const a=Date.now();return{id:o(),name:t,description:e,url:i,fields:s.map(t=>({...t,id:t.id||o()})),button:n&&n.selector?{...n}:void 0,createdAt:a,updatedAt:a}}async add(t){const e=this._newTemplate(t.name,t.description,t.url,t.fields,t.button);return this.replaceState([e,...this._state]),await this.persist(),e}async update(t,e){this.replaceState(this._state.map(i=>i.id===t?{...i,...e,fields:e.fields?e.fields.map(t=>({...t,id:t.id||o()})):i.fields,button:void 0!==e.button?e.button&&e.button.selector?{...e.button}:void 0:i.button,updatedAt:Date.now()}:i)),await this.persist()}async delete(t){this.replaceState(this._state.filter(e=>e.id!==t)),await this.persist()}async deleteMany(t){const e=new Set(t);this.replaceState(this._state.filter(t=>!e.has(t.id))),await this.persist()}getById(t){return this._state.find(e=>e.id===t)}async importFrom(t){const e=new Set(this._state.map(t=>t.id)),o=t.filter(t=>!e.has(t.id));return o.length>0&&(this.replaceState([...o,...this._state]),await this.persist()),o.length}};function v(t,e,o){if(!e.trim())return t;const i=e.toLowerCase();return t.filter(t=>o.some(e=>{const o=t[e];return"string"==typeof o&&o.toLowerCase().includes(i)}))}function k(t,e){if(0===t.length)return;const o=new Blob([JSON.stringify(t,null,2)],{type:"application/json"}),i=URL.createObjectURL(o),s=document.createElement("a");s.href=i,s.download=`${e}-${(new Date).toISOString().slice(0,10)}.json`,s.click(),URL.revokeObjectURL(i)}function $(t){const e=JSON.parse(t);if(!Array.isArray(e))throw new Error("Invalid JSON array");return e}var S=Object.defineProperty,D=Object.getOwnPropertyDescriptor,C=(t,e,o,i)=>{for(var s,n=i>1?void 0:i?D(e,o):e,a=t.length-1;a>=0;a--)(s=t[a])&&(n=(i?s(e,o,n):s(n))||n);return i&&n&&S(e,o,n),n};let T=class extends d{constructor(){super(...arguments),this.columns=[],this.rows=[],this.selectedIds=[],this.idKey="id",this.rowActions=[],this.showCheckbox=!0,this.actionsHeader="Actions",this.emptyText="No data",this.sortKey="",this.sortDir="asc"}_toggleSelectAll(t){const e=t.target.checked;this.selectedIds=e?this.rows.map(t=>this._rowId(t)):[],this._emitSelection()}_toggleOne(t){const e=this.selectedIds.indexOf(t);this.selectedIds=e>=0?[...this.selectedIds.slice(0,e),...this.selectedIds.slice(e+1)]:[...this.selectedIds,t],this._emitSelection()}_emitSelection(){this.dispatchEvent(new CustomEvent("selection-change",{detail:[...this.selectedIds],bubbles:!0,composed:!0}))}_sort(t){this.sortKey===t?"asc"===this.sortDir?this.sortDir="desc":"desc"===this.sortDir&&(this.sortKey="",this.sortDir="asc"):(this.sortKey=t,this.sortDir="asc")}_emitAction(t,e){const o={action:t,row:e};this.dispatchEvent(new CustomEvent("row-action",{detail:o,bubbles:!0,composed:!0}))}_cell(t,e){return t[e]}_rowId(t){return String(this._cell(t,this.idKey)??"")}get _sortedRows(){return this.sortKey?[...this.rows].sort((t,e)=>{const o=String(this._cell(t,this.sortKey)??""),i=String(this._cell(e,this.sortKey)??""),s=o.localeCompare(i);return"asc"===this.sortDir?s:-s}):this.rows}render(){const t=this.rows.length>0&&this.rows.every(t=>this.selectedIds.includes(this._rowId(t))),e=this.columns.length+(this.showCheckbox?1:0)+(this.rowActions.length>0?1:0);return c`
+  `,m([l({type:String})],f.prototype,"active",2),f=m([p("tabs-nav")],f);const x={},y=function(t,e,o){let i=Promise.resolve();if(e&&e.length>0){let t=function(t){return Promise.all(t.map(t=>Promise.resolve(t).then(t=>({status:"fulfilled",value:t}),t=>({status:"rejected",reason:t}))))};document.getElementsByTagName("link");const o=document.querySelector("meta[property=csp-nonce]"),s=o?.nonce||o?.getAttribute("nonce");i=t(e.map(t=>{if((t=function(t){return"/"+t}(t))in x)return;x[t]=!0;const e=t.endsWith(".css"),o=e?'[rel="stylesheet"]':"";if(document.querySelector(`link[href="${t}"]${o}`))return;const i=document.createElement("link");return i.rel=e?"stylesheet":"modulepreload",e||(i.as="script"),i.crossOrigin="",i.href=t,s&&i.setAttribute("nonce",s),document.head.appendChild(i),e?new Promise((e,o)=>{i.addEventListener("load",e),i.addEventListener("error",()=>o(new Error(`Unable to preload CSS for ${t}`)))}):void 0}))}function s(t){const e=new Event("vite:preloadError",{cancelable:!0});if(e.payload=t,window.dispatchEvent(e),!e.defaultPrevented)throw t}return i.then(e=>{for(const t of e||[])"rejected"===t.status&&s(t.reason);return t().catch(s)})},_="templates";const w=new class extends e{constructor(){super([])}async load(){const t=await chrome.storage.local.get(_);this.replaceState(t[_]??[])}async persist(){await chrome.storage.local.set({[_]:this._state})}_newTemplate(t,e,i,s,n){const r=Date.now();return{id:o(),name:t,description:e,url:i,fields:s.map(t=>({...t,id:t.id||o()})),button:n&&n.selector?{...n}:void 0,createdAt:r,updatedAt:r}}async add(t){const e=this._newTemplate(t.name,t.description,t.url,t.fields,t.button);return this.replaceState([e,...this._state]),await this.persist(),e}async update(t,e){this.replaceState(this._state.map(i=>i.id===t?{...i,...e,fields:e.fields?e.fields.map(t=>({...t,id:t.id||o()})):i.fields,button:void 0!==e.button?e.button&&e.button.selector?{...e.button}:void 0:i.button,updatedAt:Date.now()}:i)),await this.persist()}async delete(t){this.replaceState(this._state.filter(e=>e.id!==t)),await this.persist()}async deleteMany(t){const e=new Set(t);this.replaceState(this._state.filter(t=>!e.has(t.id))),await this.persist()}getById(t){return this._state.find(e=>e.id===t)}async importFrom(t){const e=new Set(this._state.map(t=>t.id)),o=t.filter(t=>!e.has(t.id));return o.length>0&&(this.replaceState([...o,...this._state]),await this.persist()),o.length}};function v(t,e,o){if(!e.trim())return t;const i=e.toLowerCase();return t.filter(t=>o.some(e=>{const o=t[e];return"string"==typeof o&&o.toLowerCase().includes(i)}))}function k(t,e){if(0===t.length)return;const o=new Blob([JSON.stringify(t,null,2)],{type:"application/json"}),i=URL.createObjectURL(o),s=document.createElement("a");s.href=i,s.download=`${e}-${(new Date).toISOString().slice(0,10)}.json`,s.click(),URL.revokeObjectURL(i)}function $(t){const e=JSON.parse(t);if(!Array.isArray(e))throw new Error("Invalid JSON array");return e}var S=Object.defineProperty,D=Object.getOwnPropertyDescriptor,C=(t,e,o,i)=>{for(var s,n=i>1?void 0:i?D(e,o):e,r=t.length-1;r>=0;r--)(s=t[r])&&(n=(i?s(e,o,n):s(n))||n);return i&&n&&S(e,o,n),n};let T=class extends d{constructor(){super(...arguments),this.columns=[],this.rows=[],this.selectedIds=[],this.idKey="id",this.rowActions=[],this.showCheckbox=!0,this.actionsHeader="Actions",this.emptyText="No data",this.sortKey="",this.sortDir="asc"}_toggleSelectAll(t){const e=t.target.checked;this.selectedIds=e?this.rows.map(t=>this._rowId(t)):[],this._emitSelection()}_toggleOne(t){const e=this.selectedIds.indexOf(t);this.selectedIds=e>=0?[...this.selectedIds.slice(0,e),...this.selectedIds.slice(e+1)]:[...this.selectedIds,t],this._emitSelection()}_emitSelection(){this.dispatchEvent(new CustomEvent("selection-change",{detail:[...this.selectedIds],bubbles:!0,composed:!0}))}_sort(t){this.sortKey===t?"asc"===this.sortDir?this.sortDir="desc":"desc"===this.sortDir&&(this.sortKey="",this.sortDir="asc"):(this.sortKey=t,this.sortDir="asc")}_emitAction(t,e){const o={action:t,row:e};this.dispatchEvent(new CustomEvent("row-action",{detail:o,bubbles:!0,composed:!0}))}_cell(t,e){return t[e]}_rowId(t){return String(this._cell(t,this.idKey)??"")}get _sortedRows(){return this.sortKey?[...this.rows].sort((t,e)=>{const o=String(this._cell(t,this.sortKey)??""),i=String(this._cell(e,this.sortKey)??""),s=o.localeCompare(i);return"asc"===this.sortDir?s:-s}):this.rows}render(){const t=this.rows.length>0&&this.rows.every(t=>this.selectedIds.includes(this._rowId(t))),e=this.columns.length+(this.showCheckbox?1:0)+(this.rowActions.length>0?1:0);return c`
       <table>
         <thead>
           <tr>
@@ -89,7 +89,7 @@ import{I as t,B as e,g as o,S as i,d as s,s as n,a}from"./toast-notification-Di3
           ${0===this.rows.length?c`<tr><td class="empty-cell" colspan=${e}><slot name="empty">${this.emptyText}</slot></td></tr>`:""}
         </tbody>
       </table>
-    `}};T.styles=r`
+    `}};T.styles=a`
     :host { display: block; overflow-x: auto; }
     table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 13px; }
     th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid #e2e8f0; }
@@ -116,12 +116,12 @@ import{I as t,B as e,g as o,S as i,d as s,s as n,a}from"./toast-notification-Di3
     .sort-arrow.asc .up { color: #2563eb; }
     .sort-arrow.desc .down { color: #2563eb; }
     .empty-cell { text-align: center; padding: 40px 14px; color: #94a3b8; font-size: 13px; border-bottom: none; }
-  `,C([l({type:Array})],T.prototype,"columns",2),C([l({type:Array})],T.prototype,"rows",2),C([l({type:Array})],T.prototype,"selectedIds",2),C([l({type:String})],T.prototype,"idKey",2),C([l({type:Array})],T.prototype,"rowActions",2),C([l({type:Boolean})],T.prototype,"showCheckbox",2),C([l({type:String})],T.prototype,"actionsHeader",2),C([l({type:String})],T.prototype,"emptyText",2),C([l({type:String})],T.prototype,"sortKey",2),C([l({type:String})],T.prototype,"sortDir",2),T=C([p("data-table")],T);var I=Object.defineProperty,E=Object.getOwnPropertyDescriptor,z=(t,e,o,i)=>{for(var s,n=i>1?void 0:i?E(e,o):e,a=t.length-1;a>=0;a--)(s=t[a])&&(n=(i?s(e,o,n):s(n))||n);return i&&n&&I(e,o,n),n};let O=class extends d{constructor(){super(...arguments),this._i18n=new t(this),this.selectedCount=0,this.showImport=!0,this.showExport=!0,this.showDelete=!0}_triggerImport(){const t=document.createElement("input");t.type="file",t.accept=".json",t.onchange=t=>{const e=t.target.files?.[0];if(!e)return;const o=new FileReader;o.onload=()=>{this.dispatchEvent(new CustomEvent("batch-import",{detail:{content:o.result},bubbles:!0,composed:!0}))},o.readAsText(e)},t.click()}_triggerExport(){this.dispatchEvent(new CustomEvent("batch-export",{bubbles:!0,composed:!0}))}_triggerDelete(){this.dispatchEvent(new CustomEvent("batch-delete",{bubbles:!0,composed:!0}))}render(){return c`
+  `,C([l({type:Array})],T.prototype,"columns",2),C([l({type:Array})],T.prototype,"rows",2),C([l({type:Array})],T.prototype,"selectedIds",2),C([l({type:String})],T.prototype,"idKey",2),C([l({type:Array})],T.prototype,"rowActions",2),C([l({type:Boolean})],T.prototype,"showCheckbox",2),C([l({type:String})],T.prototype,"actionsHeader",2),C([l({type:String})],T.prototype,"emptyText",2),C([l({type:String})],T.prototype,"sortKey",2),C([l({type:String})],T.prototype,"sortDir",2),T=C([p("data-table")],T);var j=Object.defineProperty,E=Object.getOwnPropertyDescriptor,I=(t,e,o,i)=>{for(var s,n=i>1?void 0:i?E(e,o):e,r=t.length-1;r>=0;r--)(s=t[r])&&(n=(i?s(e,o,n):s(n))||n);return i&&n&&j(e,o,n),n};let z=class extends d{constructor(){super(...arguments),this._i18n=new t(this),this.selectedCount=0,this.showImport=!0,this.showExport=!0,this.showDelete=!0}_triggerImport(){const t=document.createElement("input");t.type="file",t.accept=".json",t.onchange=t=>{const e=t.target.files?.[0];if(!e)return;const o=new FileReader;o.onload=()=>{this.dispatchEvent(new CustomEvent("batch-import",{detail:{content:o.result},bubbles:!0,composed:!0}))},o.readAsText(e)},t.click()}_triggerExport(){this.dispatchEvent(new CustomEvent("batch-export",{bubbles:!0,composed:!0}))}_triggerDelete(){this.dispatchEvent(new CustomEvent("batch-delete",{bubbles:!0,composed:!0}))}render(){return c`
       ${this.showImport?c`<button @click=${this._triggerImport}>${this._i18n.t("config.import")}</button>`:""}
       ${this.showExport?c`<button @click=${this._triggerExport} ?disabled=${0===this.selectedCount}>${this._i18n.t("config.export")}</button>`:""}
       ${this.showDelete?c`<button class="btn-delete" @click=${this._triggerDelete} ?disabled=${0===this.selectedCount}>${this._i18n.t("config.delete")}</button>`:""}
       ${this.selectedCount>0?c`<span class="count">${this._i18n.t("config.selected",{count:this.selectedCount})}</span>`:""}
-    `}};O.styles=r`
+    `}};z.styles=a`
     :host { display: flex; align-items: center; gap: 8px; }
     .count { font-size: 12px; color: #64748b; }
     button {
@@ -132,7 +132,7 @@ import{I as t,B as e,g as o,S as i,d as s,s as n,a}from"./toast-notification-Di3
     button:hover:not(:disabled) { background: #f1f5f9; border-color: #cbd5e1; }
     button:disabled { opacity: 0.4; cursor: not-allowed; }
     .btn-delete:hover:not(:disabled) { color: #dc2626; border-color: #fecaca; background: #fef2f2; }
-  `,z([l({type:Number})],O.prototype,"selectedCount",2),z([l({type:Boolean})],O.prototype,"showImport",2),z([l({type:Boolean})],O.prototype,"showExport",2),z([l({type:Boolean})],O.prototype,"showDelete",2),O=z([p("batch-toolbar")],O);var A=Object.defineProperty,j=Object.getOwnPropertyDescriptor,R=(t,e,o,i)=>{for(var s,n=i>1?void 0:i?j(e,o):e,a=t.length-1;a>=0;a--)(s=t[a])&&(n=(i?s(e,o,n):s(n))||n);return i&&n&&A(e,o,n),n};let B=class extends d{constructor(){super(...arguments),this.open=!1,this.title="Confirm",this.message="Are you sure?",this.confirmLabel="Delete",this.cancelLabel="Cancel"}confirm(){this.open=!1,this.dispatchEvent(new CustomEvent("confirm",{bubbles:!0,composed:!0}))}cancel(){this.open=!1,this.dispatchEvent(new CustomEvent("cancel",{bubbles:!0,composed:!0}))}render(){return this.open?c`
+  `,I([l({type:Number})],z.prototype,"selectedCount",2),I([l({type:Boolean})],z.prototype,"showImport",2),I([l({type:Boolean})],z.prototype,"showExport",2),I([l({type:Boolean})],z.prototype,"showDelete",2),z=I([p("batch-toolbar")],z);var O=Object.defineProperty,A=Object.getOwnPropertyDescriptor,R=(t,e,o,i)=>{for(var s,n=i>1?void 0:i?A(e,o):e,r=t.length-1;r>=0;r--)(s=t[r])&&(n=(i?s(e,o,n):s(n))||n);return i&&n&&O(e,o,n),n};let N=class extends d{constructor(){super(...arguments),this.open=!1,this.title="Confirm",this.message="Are you sure?",this.confirmLabel="Delete",this.cancelLabel="Cancel"}confirm(){this.open=!1,this.dispatchEvent(new CustomEvent("confirm",{bubbles:!0,composed:!0}))}cancel(){this.open=!1,this.dispatchEvent(new CustomEvent("cancel",{bubbles:!0,composed:!0}))}render(){return this.open?c`
       <div class="overlay" @click=${this.cancel}>
         <div class="dialog" @click=${t=>t.stopPropagation()}>
           <h3 class="title">${this.title}</h3>
@@ -143,7 +143,7 @@ import{I as t,B as e,g as o,S as i,d as s,s as n,a}from"./toast-notification-Di3
           </div>
         </div>
       </div>
-    `:c``}};B.styles=r`
+    `:c``}};function F(t,e){if(!t||"object"!=typeof t||Array.isArray(t))throw new Error(`${e} must be a JSON object.`);return t}function L(t){if(!t.trim())throw new Error("Paste JSON before saving.");const e=JSON.parse(t);if(!Array.isArray(e))return F(e,"JSON");if(1!==e.length)throw new Error("Import exactly one item in this dialog.");return F(e[0],"Array item")}function M(t,e){if("string"!=typeof t||!t.trim())throw new Error(`${e} is required.`);return t.trim()}function U(t){return"string"==typeof t?t.trim():""}N.styles=a`
     :host { display: none; }
     :host([open]) { display: block; }
     .overlay {
@@ -166,7 +166,7 @@ import{I as t,B as e,g as o,S as i,d as s,s as n,a}from"./toast-notification-Di3
     button:hover { background: #f1f5f9; }
     .btn-danger { background: #dc2626; color: #fff; border-color: #dc2626; }
     .btn-danger:hover { background: #b91c1c; border-color: #b91c1c; }
-  `,R([l({type:Boolean,reflect:!0})],B.prototype,"open",2),R([l({type:String})],B.prototype,"title",2),R([l({type:String})],B.prototype,"message",2),R([l({type:String})],B.prototype,"confirmLabel",2),R([l({type:String})],B.prototype,"cancelLabel",2),B=R([p("confirm-dialog")],B);var F=Object.defineProperty,U=Object.getOwnPropertyDescriptor,N=(t,e,o,i)=>{for(var s,n=i>1?void 0:i?U(e,o):e,a=t.length-1;a>=0;a--)(s=t[a])&&(n=(i?s(e,o,n):s(n))||n);return i&&n&&F(e,o,n),n};let P=class extends d{constructor(){super(...arguments),this.fields=[],this.mode="definition",this.readonly=!1,this.showDrag=!1}_notify(){this.dispatchEvent(new CustomEvent("fields-change",{detail:[...this.fields],bubbles:!0,composed:!0}))}_updateField(t,e,o){this.fields=this.fields.map(i=>i.id===t?{...i,[e]:o}:i),this._notify()}addRow(){this.fields=[...this.fields,{id:o(),name:"",selector:"",value:""}],this._notify()}copyRow(t){const e=this.fields.findIndex(e=>e.id===t);if(-1===e)return;const i=this.fields[e],s={...i,id:o(),name:i.name+" (copy)"},n=[...this.fields];n.splice(e+1,0,s),this.fields=n,this._notify()}deleteRow(t){this.fields=this.fields.filter(e=>e.id!==t),this._notify()}_onDragStart(t,e){t.dataTransfer.effectAllowed="move",t.dataTransfer.setData("text/plain",String(e))}_onDragOver(t){t.preventDefault(),t.dataTransfer.dropEffect="move"}_onDrop(t,e){t.preventDefault();const o=Number(t.dataTransfer.getData("text/plain"));if(isNaN(o)||o===e)return;const i=[...this.fields],[s]=i.splice(o,1);i.splice(e,0,s),this.fields=i,this._notify()}render(){const t="definition"===this.mode,e="value"===this.mode;return c`
+  `,R([l({type:Boolean,reflect:!0})],N.prototype,"open",2),R([l({type:String})],N.prototype,"title",2),R([l({type:String})],N.prototype,"message",2),R([l({type:String})],N.prototype,"confirmLabel",2),R([l({type:String})],N.prototype,"cancelLabel",2),N=R([p("confirm-dialog")],N);var P=Object.defineProperty,B=Object.getOwnPropertyDescriptor,q=(t,e,o,i)=>{for(var s,n=i>1?void 0:i?B(e,o):e,r=t.length-1;r>=0;r--)(s=t[r])&&(n=(i?s(e,o,n):s(n))||n);return i&&n&&P(e,o,n),n};let J=class extends d{constructor(){super(...arguments),this.fields=[],this.mode="definition",this.readonly=!1,this.showDrag=!1}_notify(){this.dispatchEvent(new CustomEvent("fields-change",{detail:[...this.fields],bubbles:!0,composed:!0}))}_updateField(t,e,o){this.fields=this.fields.map(i=>i.id===t?{...i,[e]:o}:i),this._notify()}addRow(){this.fields=[...this.fields,{id:o(),name:"",selector:"",value:""}],this._notify()}copyRow(t){const e=this.fields.findIndex(e=>e.id===t);if(-1===e)return;const i=this.fields[e],s={...i,id:o(),name:i.name+" (copy)"},n=[...this.fields];n.splice(e+1,0,s),this.fields=n,this._notify()}deleteRow(t){this.fields=this.fields.filter(e=>e.id!==t),this._notify()}_onDragStart(t,e){t.dataTransfer.effectAllowed="move",t.dataTransfer.setData("text/plain",String(e))}_onDragOver(t){t.preventDefault(),t.dataTransfer.dropEffect="move"}_onDrop(t,e){t.preventDefault();const o=Number(t.dataTransfer.getData("text/plain"));if(isNaN(o)||o===e)return;const i=[...this.fields],[s]=i.splice(o,1);i.splice(e,0,s),this.fields=i,this._notify()}render(){const t="definition"===this.mode,e="value"===this.mode;return c`
       <div class="field-list">
         ${this.fields.map((o,i)=>c`
           <div class="field-row">
@@ -188,7 +188,7 @@ import{I as t,B as e,g as o,S as i,d as s,s as n,a}from"./toast-notification-Di3
         `)}
       </div>
       <button class="add-btn" @click=${()=>this.addRow()} ?disabled=${this.readonly}>+ Add field</button>
-    `}};P.styles=r`
+    `}};J.styles=a`
     :host { display: block; }
     .field-list { display: flex; flex-direction: column; gap: 8px; }
     .field-row { display: flex; gap: 8px; align-items: center; }
@@ -215,7 +215,7 @@ import{I as t,B as e,g as o,S as i,d as s,s as n,a}from"./toast-notification-Di3
     .add-btn:hover { border-color: #2563eb; color: #2563eb; background: #f8faff; }
     .drag-handle { cursor: grab; color: #cbd5e1; user-select: none; font-size: 16px; flex-shrink: 0; }
     .drag-handle:active { cursor: grabbing; }
-  `,N([l({type:Array})],P.prototype,"fields",2),N([l({type:String})],P.prototype,"mode",2),N([l({type:Boolean})],P.prototype,"readonly",2),N([l({type:Boolean})],P.prototype,"showDrag",2),P=N([p("dynamic-field-list")],P);var L=Object.defineProperty,M=Object.getOwnPropertyDescriptor,q=(t,e,o,i)=>{for(var s,n=i>1?void 0:i?M(e,o):e,a=t.length-1;a>=0;a--)(s=t[a])&&(n=(i?s(e,o,n):s(n))||n);return i&&n&&L(e,o,n),n};let V=class extends d{constructor(){super(...arguments),this._i18n=new t(this),this.mode="definition",this.name="",this.description="",this.url="",this.fields=[],this.buttonName="",this.buttonSelector=""}_notify(){this.dispatchEvent(new CustomEvent("form-change",{detail:{name:this.name,description:this.description,url:this.url,fields:[...this.fields],buttonName:this.buttonName,buttonSelector:this.buttonSelector},bubbles:!0,composed:!0}))}_onInput(t,e){this[t]=e.target.value,this._notify()}_onFieldsChange(t){this.fields=t.detail,this._notify()}render(){const t="definition"===this.mode;return c`
+  `,q([l({type:Array})],J.prototype,"fields",2),q([l({type:String})],J.prototype,"mode",2),q([l({type:Boolean})],J.prototype,"readonly",2),q([l({type:Boolean})],J.prototype,"showDrag",2),J=q([p("dynamic-field-list")],J);var V=Object.defineProperty,Y=Object.getOwnPropertyDescriptor,K=(t,e,o,i)=>{for(var s,n=i>1?void 0:i?Y(e,o):e,r=t.length-1;r>=0;r--)(s=t[r])&&(n=(i?s(e,o,n):s(n))||n);return i&&n&&V(e,o,n),n};let H=class extends d{constructor(){super(...arguments),this._i18n=new t(this),this.mode="definition",this.name="",this.description="",this.url="",this.fields=[],this.buttonName="",this.buttonSelector=""}_notify(){this.dispatchEvent(new CustomEvent("form-change",{detail:{name:this.name,description:this.description,url:this.url,fields:[...this.fields],buttonName:this.buttonName,buttonSelector:this.buttonSelector},bubbles:!0,composed:!0}))}_onInput(t,e){this[t]=e.target.value,this._notify()}_onFieldsChange(t){this.fields=t.detail,this._notify()}render(){const t="definition"===this.mode;return c`
       <div class="form">
         <div class="row">
           <div class="form-group">
@@ -254,7 +254,7 @@ import{I as t,B as e,g as o,S as i,d as s,s as n,a}from"./toast-notification-Di3
           </div>
         </div>
       </div>
-    `}};V.styles=r`
+    `}};H.styles=a`
     :host { display: block; }
     .form { display: flex; flex-direction: column; gap: 16px; }
     .form-group { display: flex; flex-direction: column; gap: 5px; }
@@ -279,7 +279,59 @@ import{I as t,B as e,g as o,S as i,d as s,s as n,a}from"./toast-notification-Di3
       padding-top: 16px; border-top: 1px solid #f1f5f9;
     }
     .field-label-row span:last-child { color: #94a3b8; font-weight: 400; }
-  `,q([l({type:String})],V.prototype,"mode",2),q([l({type:String})],V.prototype,"name",2),q([l({type:String})],V.prototype,"description",2),q([l({type:String})],V.prototype,"url",2),q([l({type:Array})],V.prototype,"fields",2),q([l({type:String})],V.prototype,"buttonName",2),q([l({type:String})],V.prototype,"buttonSelector",2),V=q([p("form-config")],V);var Y=Object.defineProperty,K=Object.getOwnPropertyDescriptor,H=(t,e,o,i)=>{for(var s,n=i>1?void 0:i?K(e,o):e,a=t.length-1;a>=0;a--)(s=t[a])&&(n=(i?s(e,o,n):s(n))||n);return i&&n&&Y(e,o,n),n};let J=class extends d{constructor(){super(...arguments),this.open=!1,this.title="",this.size="medium",this._onKeyDown=t=>{"Escape"===t.key&&this.close()}}close(){this.open=!1,this.dispatchEvent(new CustomEvent("modal-close",{bubbles:!0,composed:!0}))}connectedCallback(){super.connectedCallback(),document.addEventListener("keydown",this._onKeyDown)}disconnectedCallback(){super.disconnectedCallback(),document.removeEventListener("keydown",this._onKeyDown)}render(){return this.open?c`
+  `,K([l({type:String})],H.prototype,"mode",2),K([l({type:String})],H.prototype,"name",2),K([l({type:String})],H.prototype,"description",2),K([l({type:String})],H.prototype,"url",2),K([l({type:Array})],H.prototype,"fields",2),K([l({type:String})],H.prototype,"buttonName",2),K([l({type:String})],H.prototype,"buttonSelector",2),H=K([p("form-config")],H);var Q=Object.defineProperty,W=Object.getOwnPropertyDescriptor,G=(t,e,o,i)=>{for(var s,n=i>1?void 0:i?W(e,o):e,r=t.length-1;r>=0;r--)(s=t[r])&&(n=(i?s(e,o,n):s(n))||n);return i&&n&&Q(e,o,n),n};let X=class extends d{constructor(){super(...arguments),this.active="form",this.formLabel="Form",this.jsonLabel="JSON Import"}_select(t){t!==this.active&&(this.active=t,this.dispatchEvent(new CustomEvent("mode-change",{detail:{mode:t},bubbles:!0,composed:!0})))}render(){return c`
+      <div class="tabs" role="tablist">
+        <button role="tab" aria-selected=${"form"===this.active} @click=${()=>this._select("form")}>${this.formLabel}</button>
+        <button role="tab" aria-selected=${"json"===this.active} @click=${()=>this._select("json")}>${this.jsonLabel}</button>
+      </div>
+    `}};X.styles=a`
+    :host { display: block; margin: -8px 0 22px; }
+    .tabs {
+      display: inline-flex; gap: 3px; padding: 3px;
+      border: 1px solid #d8e8df; border-radius: 9px; background: #f4faf6;
+    }
+    button {
+      min-width: 92px; padding: 7px 14px; border: 0; border-radius: 6px;
+      background: transparent; color: #64748b; cursor: pointer;
+      font: 600 12px/1.2 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      transition: color 0.15s, background 0.15s, box-shadow 0.15s;
+    }
+    button:hover { color: #24724b; }
+    button[aria-selected='true'] {
+      background: #fff; color: #24724b; box-shadow: 0 1px 4px rgba(31, 110, 70, 0.13);
+    }
+    button:focus-visible { outline: 2px solid #7bc99a; outline-offset: 1px; }
+  `,G([l({type:String})],X.prototype,"active",2),G([l({type:String})],X.prototype,"formLabel",2),G([l({type:String})],X.prototype,"jsonLabel",2),X=G([p("form-mode-tabs")],X);var Z=Object.defineProperty,tt=Object.getOwnPropertyDescriptor,et=(t,e,o,i)=>{for(var s,n=i>1?void 0:i?tt(e,o):e,r=t.length-1;r>=0;r--)(s=t[r])&&(n=(i?s(e,o,n):s(n))||n);return i&&n&&Z(e,o,n),n};let ot=class extends d{constructor(){super(...arguments),this.label="JSON",this.hint="",this.placeholder="",this.value="",this.error=""}_onInput(t){this.value=t.target.value,this.dispatchEvent(new CustomEvent("json-change",{detail:{value:this.value},bubbles:!0,composed:!0}))}render(){return c`
+      <div class="heading">
+        <label for="json-input">${this.label}</label>
+        <span class="hint">${this.hint}</span>
+      </div>
+      <textarea
+        id="json-input"
+        spellcheck="false"
+        aria-invalid=${Boolean(this.error)}
+        aria-describedby=${this.error?"json-error":""}
+        .placeholder=${this.placeholder}
+        .value=${this.value}
+        @input=${this._onInput}
+      ></textarea>
+      ${this.error?c`<p class="error" id="json-error" role="alert">${this.error}</p>`:null}
+    `}};ot.styles=a`
+    :host { display: block; }
+    .heading { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 8px; }
+    label { color: #334155; font-size: 12px; font-weight: 700; }
+    .hint { color: #718096; font-size: 11px; text-align: right; }
+    textarea {
+      width: 100%; min-height: 340px; resize: vertical; box-sizing: border-box;
+      padding: 14px 16px; border: 1px solid #d8e8df; border-radius: 9px;
+      background: #fbfefc; color: #1e293b; outline: none;
+      font: 12px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      tab-size: 2; transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+    }
+    textarea:focus { border-color: #65b987; background: #fff; box-shadow: 0 0 0 3px rgba(101,185,135,0.16); }
+    textarea[aria-invalid='true'] { border-color: #e87979; box-shadow: 0 0 0 3px rgba(232,121,121,0.12); }
+    .error { margin: 8px 2px 0; color: #c24141; font-size: 12px; line-height: 1.45; }
+  `,et([l({type:String})],ot.prototype,"label",2),et([l({type:String})],ot.prototype,"hint",2),et([l({type:String})],ot.prototype,"placeholder",2),et([l({type:String})],ot.prototype,"value",2),et([l({type:String})],ot.prototype,"error",2),ot=et([p("json-import-editor")],ot);var it=Object.defineProperty,st=Object.getOwnPropertyDescriptor,nt=(t,e,o,i)=>{for(var s,n=i>1?void 0:i?st(e,o):e,r=t.length-1;r>=0;r--)(s=t[r])&&(n=(i?s(e,o,n):s(n))||n);return i&&n&&it(e,o,n),n};let rt=class extends d{constructor(){super(...arguments),this.open=!1,this.title="",this.size="medium",this._onKeyDown=t=>{"Escape"===t.key&&this.close()}}close(){this.open=!1,this.dispatchEvent(new CustomEvent("modal-close",{bubbles:!0,composed:!0}))}connectedCallback(){super.connectedCallback(),document.addEventListener("keydown",this._onKeyDown)}disconnectedCallback(){super.disconnectedCallback(),document.removeEventListener("keydown",this._onKeyDown)}render(){return this.open?c`
       <div class="overlay">
         <div class="dialog ${this.size}">
           <div class="header">
@@ -290,7 +342,7 @@ import{I as t,B as e,g as o,S as i,d as s,s as n,a}from"./toast-notification-Di3
           <div class="footer"><slot name="footer"></slot></div>
         </div>
       </div>
-    `:c``}};J.styles=r`
+    `:c``}};rt.styles=a`
     :host { display: none; }
     :host([open]) { display: block; }
     .overlay {
@@ -329,24 +381,41 @@ import{I as t,B as e,g as o,S as i,d as s,s as n,a}from"./toast-notification-Di3
     }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-  `,H([l({type:Boolean,reflect:!0})],J.prototype,"open",2),H([l({type:String})],J.prototype,"title",2),H([l({type:String})],J.prototype,"size",2),J=H([p("modal-dialog")],J);var Q=Object.defineProperty,W=Object.getOwnPropertyDescriptor,G=(t,e,o,i)=>{for(var s,n=i>1?void 0:i?W(e,o):e,a=t.length-1;a>=0;a--)(s=t[a])&&(n=(i?s(e,o,n):s(n))||n);return i&&n&&Q(e,o,n),n};let X=null,Z=class extends d{constructor(){super(...arguments),this._i18n=new t(this),this.mode="add",this.data={},this._formData={name:"",description:"",url:"",fields:[],buttonName:"",buttonSelector:""}}open(t){t?(this.data={...t},this._formData={name:t.name,description:t.description,url:t.url,fields:t.fields.map(t=>({id:t.id,name:t.name,selector:t.selector,value:""})),buttonName:t.button?.name??"",buttonSelector:t.button?.selector??""}):this._formData=X?{...X,fields:[...X.fields]}:{name:"",description:"",url:"",fields:[],buttonName:"",buttonSelector:""},this.requestUpdate();const e=this.renderRoot.querySelector("#modal");e&&(e.open=!0)}close(){"add"===this.mode&&this._saveDraft();const t=this.renderRoot.querySelector("#modal");t&&(t.open=!1),this.dispatchEvent(new CustomEvent("modal-close",{bubbles:!0,composed:!0}))}_onFormChange(t){this._formData=t.detail,this.requestUpdate()}_submit(){const t=this._formData;if(!t.name.trim())return;const e=t.fields.filter(t=>t.name.trim()).map(t=>({id:t.id,name:t.name.trim(),selector:t.selector?.trim()??""})),o=t.buttonSelector.trim()?{name:t.buttonName.trim()||"Submit",selector:t.buttonSelector.trim()}:void 0;this.dispatchEvent(new CustomEvent("template-submit",{detail:{name:t.name.trim(),description:t.description.trim(),url:t.url.trim(),fields:e,button:o},bubbles:!0,composed:!0})),this._clearDraft(),this.close()}_saveDraft(){X={...this._formData,fields:[...this._formData.fields]}}_clearDraft(){X=null}render(){const t="edit"===this.mode?this._i18n.t("template.edit"):"copy"===this.mode?this._i18n.t("template.copy"):"extract"===this.mode?this._i18n.t("template.extract"):this._i18n.t("template.new");return c`
+  `,nt([l({type:Boolean,reflect:!0})],rt.prototype,"open",2),nt([l({type:String})],rt.prototype,"title",2),nt([l({type:String})],rt.prototype,"size",2),rt=nt([p("modal-dialog")],rt);var at=Object.defineProperty,lt=Object.getOwnPropertyDescriptor,dt=(t,e,o,i)=>{for(var s,n=i>1?void 0:i?lt(e,o):e,r=t.length-1;r>=0;r--)(s=t[r])&&(n=(i?s(e,o,n):s(n))||n);return i&&n&&at(e,o,n),n};let ct=null,pt=class extends d{constructor(){super(...arguments),this._i18n=new t(this),this.mode="add",this.data={},this._formData={name:"",description:"",url:"",fields:[],buttonName:"",buttonSelector:""},this._inputMode="form",this._jsonText="",this._jsonError="",this._jsonDirty=!1}open(t){t?(this.data={...t},this._formData={name:t.name,description:t.description,url:t.url,fields:t.fields.map(t=>({id:t.id,name:t.name,selector:t.selector,value:""})),buttonName:t.button?.name??"",buttonSelector:t.button?.selector??""}):this._formData=ct?{...ct,fields:[...ct.fields]}:{name:"",description:"",url:"",fields:[],buttonName:"",buttonSelector:""},this._inputMode="form",this._jsonText=this._serializeFormData(),this._jsonError="",this._jsonDirty=!1,this.requestUpdate();const e=this.renderRoot.querySelector("#modal");e&&(e.open=!0)}close(){"add"===this.mode&&this._saveDraft();const t=this.renderRoot.querySelector("#modal");t&&(t.open=!1),this.dispatchEvent(new CustomEvent("modal-close",{bubbles:!0,composed:!0}))}_onFormChange(t){this._formData=t.detail,this.requestUpdate()}_serializeFormData(){const t=this._formData;return JSON.stringify([{name:t.name,description:t.description,url:t.url,fields:t.fields.map(t=>({name:t.name,selector:t.selector??""})),...t.buttonSelector.trim()?{button:{name:t.buttonName||"Submit",selector:t.buttonSelector}}:{}}],null,2)}_onModeChange(t){this._inputMode=t.detail.mode,"json"!==this._inputMode||this._jsonDirty||(this._jsonText=this._serializeFormData()),this._jsonError="",this.requestUpdate()}_onJsonChange(t){this._jsonText=t.detail.value,this._jsonError="",this._jsonDirty=!0,this.requestUpdate()}_submit(){if("json"===this._inputMode){try{const t=function(t){const e=L(t);if(!Array.isArray(e.fields))throw new Error("fields must be an array.");const o=e.fields.map((t,e)=>{const o=F(t,`fields[${e}]`);return{id:U(o.id)||crypto.randomUUID(),name:M(o.name,`fields[${e}].name`),selector:U(o.selector)}});let i;if(void 0!==e.button&&null!==e.button){const t=F(e.button,"button"),o=U(t.selector);o&&(i={name:U(t.name)||"Submit",selector:o})}return{name:M(e.name,"name"),description:U(e.description),url:U(e.url),fields:o,button:i}}(this._jsonText);this.dispatchEvent(new CustomEvent("template-submit",{detail:t,bubbles:!0,composed:!0})),this._clearDraft(),this.close()}catch{this._jsonError=this._i18n.t("config.jsonInvalid"),this.requestUpdate()}return}const t=this._formData;if(!t.name.trim())return;const e=t.fields.filter(t=>t.name.trim()).map(t=>({id:t.id,name:t.name.trim(),selector:t.selector?.trim()??""})),o=t.buttonSelector.trim()?{name:t.buttonName.trim()||"Submit",selector:t.buttonSelector.trim()}:void 0;this.dispatchEvent(new CustomEvent("template-submit",{detail:{name:t.name.trim(),description:t.description.trim(),url:t.url.trim(),fields:e,button:o},bubbles:!0,composed:!0})),this._clearDraft(),this.close()}_saveDraft(){ct={...this._formData,fields:[...this._formData.fields]}}_clearDraft(){ct=null}render(){const t="edit"===this.mode?this._i18n.t("template.edit"):"copy"===this.mode?this._i18n.t("template.copy"):"extract"===this.mode?this._i18n.t("template.extract"):this._i18n.t("template.new");return c`
       <modal-dialog id="modal" title=${t} size="large" @modal-close=${this.close}>
-        <form-config
-          mode="definition"
-          .name=${this._formData.name}
-          .description=${this._formData.description}
-          .url=${this._formData.url}
-          .fields=${this._formData.fields}
-          .buttonName=${this._formData.buttonName}
-          .buttonSelector=${this._formData.buttonSelector}
-          @form-change=${this._onFormChange}
-        ></form-config>
+        <form-mode-tabs
+          .active=${this._inputMode}
+          .formLabel=${this._i18n.t("config.modeForm")}
+          .jsonLabel=${this._i18n.t("config.modeJson")}
+          @mode-change=${this._onModeChange}
+        ></form-mode-tabs>
+        ${"form"===this._inputMode?c`
+          <form-config
+            mode="definition"
+            .name=${this._formData.name}
+            .description=${this._formData.description}
+            .url=${this._formData.url}
+            .fields=${this._formData.fields}
+            .buttonName=${this._formData.buttonName}
+            .buttonSelector=${this._formData.buttonSelector}
+            @form-change=${this._onFormChange}
+          ></form-config>
+        `:c`
+          <json-import-editor
+            .label=${this._i18n.t("config.jsonLabel")}
+            .hint=${this._i18n.t("config.jsonHint")}
+            .placeholder=${this._i18n.t("config.jsonTemplatePlaceholder")}
+            .value=${this._jsonText}
+            .error=${this._jsonError}
+            @json-change=${this._onJsonChange}
+          ></json-import-editor>
+        `}
         <div slot="footer">
           <button class="btn-cancel" @click=${this.close}>${this._i18n.t("config.cancel")}</button>
-          <button class="btn-primary" @click=${this._submit} ?disabled=${!this._formData.name.trim()}>${this._i18n.t("config.save")}</button>
+          <button class="btn-primary" @click=${this._submit} ?disabled=${"form"===this._inputMode?!this._formData.name.trim():!this._jsonText.trim()}>${this._i18n.t("config.save")}</button>
         </div>
       </modal-dialog>
-    `}};Z.styles=r`
+    `}};pt.styles=a`
     .btn-primary {
       padding: 8px 20px; border-radius: 6px; background: #2563eb; color: #fff;
       border: none; cursor: pointer; font-size: 13px; font-weight: 500; transition: background 0.15s;
@@ -358,7 +427,7 @@ import{I as t,B as e,g as o,S as i,d as s,s as n,a}from"./toast-notification-Di3
       border: 1px solid #e2e8f0; cursor: pointer; font-size: 13px; transition: background 0.15s;
     }
     .btn-cancel:hover { background: #f1f5f9; }
-  `,G([l({type:String})],Z.prototype,"mode",2),G([l({type:Object})],Z.prototype,"data",2),Z=G([p("template-modal")],Z);var tt=Object.defineProperty,et=Object.getOwnPropertyDescriptor,ot=(t,e,o,i)=>{for(var s,n=i>1?void 0:i?et(e,o):e,a=t.length-1;a>=0;a--)(s=t[a])&&(n=(i?s(e,o,n):s(n))||n);return i&&n&&tt(e,o,n),n};let it=class extends d{constructor(){super(...arguments),this._i18n=new t(this),this._templates=new i(this,w,!0),this._searchQuery="",this._selectedIds=[],this._deleteTarget=[]}get _columns(){return[{key:"name",label:this._i18n.t("template.name"),sortable:!0,width:"160px"},{key:"url",label:this._i18n.t("template.url"),sortable:!1,width:"240px"},{key:"description",label:this._i18n.t("template.description"),sortable:!1}]}get _actions(){return[{key:"edit",label:this._i18n.t("config.edit")},{key:"copy",label:this._i18n.t("config.copy")},{key:"delete",label:this._i18n.t("config.delete")},{key:"export",label:this._i18n.t("config.export")}]}get _filtered(){return v(this._templates.state,this._searchQuery,["name","description","url"])}_onSearch(t){this._searchQuery=t.detail.value,this.requestUpdate()}_onSelection(t){this._selectedIds=t.detail,this.requestUpdate()}_onRowAction(t){const{action:e,row:o}=t.detail,i=o;switch(e){case"edit":this._editData=i,this._modal.mode="edit",this._modal.open(i);break;case"copy":this._editData=void 0,this._modal.mode="copy",this._modal.open({...i,name:i.name+" (Copy)"});break;case"delete":this._deleteTarget=[i.id],this._confirm.title=this._i18n.t("template.deleteTitle"),this._confirm.message=this._i18n.t("template.deleteMsg",{name:i.name}),this._confirm.open=!0;break;case"export":this._exportSelection([i.id])}}async _onConfirm(){if(this._deleteTarget.length){const t=this._deleteTarget.length;await w.deleteMany(this._deleteTarget),this._deleteTarget=[],this._selectedIds=[];const{showToast:e}=await y(async()=>{const{showToast:t}=await import("./toast-notification-Di32hrM7.js").then(t=>t.t);return{showToast:t}},__vite__mapDeps([0,1]));e(this._i18n.t("template.deleted",{count:t}),"success")}this.requestUpdate()}async _onTemplateSubmit(t){const e=t.detail;this._editData?await w.update(this._editData.id,e):await w.add(e),this._editData=void 0}_onBatchExport(){this._exportSelection(this._selectedIds)}_exportSelection(t){k(this._templates.state.filter(e=>t.includes(e.id)),"templates")}async _onBatchImport(t){try{const e=$(t.detail.content),o=await w.importFrom(e),{showToast:i}=await y(async()=>{const{showToast:t}=await import("./toast-notification-Di32hrM7.js").then(t=>t.t);return{showToast:t}},__vite__mapDeps([0,1]));i(this._i18n.t("template.imported",{count:o}),"success")}catch{const{showToast:t}=await y(async()=>{const{showToast:t}=await import("./toast-notification-Di32hrM7.js").then(t=>t.t);return{showToast:t}},__vite__mapDeps([0,1]));t(this._i18n.t("template.importFailed"),"error")}}_onBatchDelete(){this._deleteTarget=[...this._selectedIds],this._confirm.title=this._i18n.t("template.deleteBatchTitle"),this._confirm.message=this._i18n.t("template.deleteBatchMsg",{count:this._deleteTarget.length}),this._confirm.open=!0}_openAdd(){this._editData=void 0,this._modal.mode="add",this._modal.open()}render(){const t=this._filtered;return c`
+  `,dt([l({type:String})],pt.prototype,"mode",2),dt([l({type:Object})],pt.prototype,"data",2),pt=dt([p("template-modal")],pt);var ht=Object.defineProperty,ut=Object.getOwnPropertyDescriptor,gt=(t,e,o,i)=>{for(var s,n=i>1?void 0:i?ut(e,o):e,r=t.length-1;r>=0;r--)(s=t[r])&&(n=(i?s(e,o,n):s(n))||n);return i&&n&&ht(e,o,n),n};let bt=class extends d{constructor(){super(...arguments),this._i18n=new t(this),this._templates=new i(this,w,!0),this._searchQuery="",this._selectedIds=[],this._deleteTarget=[]}get _columns(){return[{key:"name",label:this._i18n.t("template.name"),sortable:!0,width:"160px"},{key:"url",label:this._i18n.t("template.url"),sortable:!1,width:"240px"},{key:"description",label:this._i18n.t("template.description"),sortable:!1}]}get _actions(){return[{key:"edit",label:this._i18n.t("config.edit")},{key:"copy",label:this._i18n.t("config.copy")},{key:"delete",label:this._i18n.t("config.delete")},{key:"export",label:this._i18n.t("config.export")}]}get _filtered(){return v(this._templates.state,this._searchQuery,["name","description","url"])}_onSearch(t){this._searchQuery=t.detail.value,this.requestUpdate()}_onSelection(t){this._selectedIds=t.detail,this.requestUpdate()}_onRowAction(t){const{action:e,row:o}=t.detail,i=o;switch(e){case"edit":this._editData=i,this._modal.mode="edit",this._modal.open(i);break;case"copy":this._editData=void 0,this._modal.mode="copy",this._modal.open({...i,name:i.name+" (Copy)"});break;case"delete":this._deleteTarget=[i.id],this._confirm.title=this._i18n.t("template.deleteTitle"),this._confirm.message=this._i18n.t("template.deleteMsg",{name:i.name}),this._confirm.open=!0;break;case"export":this._exportSelection([i.id])}}async _onConfirm(){if(this._deleteTarget.length){const t=this._deleteTarget.length;await w.deleteMany(this._deleteTarget),this._deleteTarget=[],this._selectedIds=[];const{showToast:e}=await y(async()=>{const{showToast:t}=await import("./toast-notification-WwcTRqnw.js").then(t=>t.t);return{showToast:t}},__vite__mapDeps([0,1]));e(this._i18n.t("template.deleted",{count:t}),"success")}this.requestUpdate()}async _onTemplateSubmit(t){const e=t.detail;this._editData?await w.update(this._editData.id,e):await w.add(e),this._editData=void 0}_onBatchExport(){this._exportSelection(this._selectedIds)}_exportSelection(t){k(this._templates.state.filter(e=>t.includes(e.id)),"templates")}async _onBatchImport(t){try{const e=$(t.detail.content),o=await w.importFrom(e),{showToast:i}=await y(async()=>{const{showToast:t}=await import("./toast-notification-WwcTRqnw.js").then(t=>t.t);return{showToast:t}},__vite__mapDeps([0,1]));i(this._i18n.t("template.imported",{count:o}),"success")}catch{const{showToast:t}=await y(async()=>{const{showToast:t}=await import("./toast-notification-WwcTRqnw.js").then(t=>t.t);return{showToast:t}},__vite__mapDeps([0,1]));t(this._i18n.t("template.importFailed"),"error")}}_onBatchDelete(){this._deleteTarget=[...this._selectedIds],this._confirm.title=this._i18n.t("template.deleteBatchTitle"),this._confirm.message=this._i18n.t("template.deleteBatchMsg",{count:this._deleteTarget.length}),this._confirm.open=!0}_openAdd(){this._editData=void 0,this._modal.mode="add",this._modal.open()}render(){const t=this._filtered;return c`
       <div class="top-row">
         <div class="top-row-left">
           <button class="add-btn" @click=${this._openAdd}>+ ${this._i18n.t("template.new")}</button>
@@ -387,7 +456,7 @@ import{I as t,B as e,g as o,S as i,d as s,s as n,a}from"./toast-notification-Di3
       </data-table>
       <template-modal @template-submit=${this._onTemplateSubmit}></template-modal>
       <confirm-dialog @confirm=${this._onConfirm}></confirm-dialog>
-    `}};it.styles=r`
+    `}};bt.styles=a`
     :host { display: block; }
     .top-row {
       display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
@@ -402,33 +471,50 @@ import{I as t,B as e,g as o,S as i,d as s,s as n,a}from"./toast-notification-Di3
       white-space: nowrap; transition: background 0.15s;
     }
     .add-btn:hover { background: #1d4ed8; }
-  `,ot([h("template-modal")],it.prototype,"_modal",2),ot([h("confirm-dialog")],it.prototype,"_confirm",2),it=ot([p("template-management")],it);var st=Object.defineProperty,nt=Object.getOwnPropertyDescriptor,at=(t,e,o,i)=>{for(var s,n=i>1?void 0:i?nt(e,o):e,a=t.length-1;a>=0;a--)(s=t[a])&&(n=(i?s(e,o,n):s(n))||n);return i&&n&&st(e,o,n),n};let rt=null,lt=class extends d{constructor(){super(...arguments),this._i18n=new t(this),this.mode="add",this._templates=new i(this,w,!0),this._selectedTemplateId="",this._restoring=!1,this._formData={name:"",description:"",url:"",fields:[],buttonName:"",buttonSelector:""}}open(t){if(this._selectedTemplateId="",t){this._selectedTemplateId=t.templateId;const e=w.getById(t.templateId);this._formData={name:t.name,description:t.description||e?.description||"",url:t.url,fields:this._buildValueFields(t.templateId,t.values),buttonName:t.buttonName??"",buttonSelector:t.buttonSelector??""}}else rt?(this._restoring=!0,this._selectedTemplateId=rt.templateId,this._formData={name:rt.name,description:rt.description,url:rt.url,fields:[...rt.fields],buttonName:rt.buttonName,buttonSelector:rt.buttonSelector}):this._formData={name:"",description:"",url:"",fields:[],buttonName:"",buttonSelector:""};this.requestUpdate();const e=this.renderRoot.querySelector("#modal");e&&(e.open=!0)}updated(t){super.updated(t),this._restoring=!1}_buildValueFields(t,e){const o=Array.isArray(e)?e:Object.entries(e).map(([t,e])=>({name:t,selector:"",value:e})),i=w.getById(t);return i?i.fields.map(t=>{const e=o.find(e=>e.name===t.name)??o.find(e=>e.selector===t.selector);return{id:t.id,name:t.name,selector:t.selector,value:e?.value??""}}):o.map(t=>({id:crypto.randomUUID(),...t}))}close(){"add"===this.mode&&this._saveDraft();const t=this.renderRoot.querySelector("#modal");t&&(t.open=!1),this.dispatchEvent(new CustomEvent("modal-close",{bubbles:!0,composed:!0}))}_onTemplateChange(t){if(this._restoring)return;const e=t.target.value;if(this._selectedTemplateId=e,!e)return this._formData={name:"",description:"",url:"",fields:[],buttonName:"",buttonSelector:""},void this.requestUpdate();const o=w.getById(e);o&&(this._formData={name:this._formData.name||o.name,description:o.description,url:this._formData.url||o.url,fields:o.fields.map(t=>({id:t.id,name:t.name,selector:t.selector,value:""})),buttonName:this._formData.buttonName||o.button?.name||"",buttonSelector:this._formData.buttonSelector||o.button?.selector||""},this.requestUpdate())}_onFormChange(t){this._formData=t.detail,this.requestUpdate()}_saveDraft(){rt={...this._formData,fields:[...this._formData.fields],templateId:this._selectedTemplateId}}_submit(){const t=this._formData;if(!t.name.trim())return;const e=t.fields.map(t=>({name:t.name,selector:t.selector??"",value:(t.value??"").trim()}));this.dispatchEvent(new CustomEvent("data-submit",{detail:{name:t.name.trim(),description:t.description.trim(),url:t.url.trim(),templateId:this._selectedTemplateId,values:e,buttonName:t.buttonName.trim()||void 0,buttonSelector:t.buttonSelector.trim()||void 0},bubbles:!0,composed:!0})),this._clearDraft(),this.close()}_clearDraft(){rt=null}render(){const t=this._templates.state,e="edit"===this.mode?this._i18n.t("data.edit"):"copy"===this.mode?this._i18n.t("data.copy"):this._i18n.t("data.new");return c`
+  `,gt([h("template-modal")],bt.prototype,"_modal",2),gt([h("confirm-dialog")],bt.prototype,"_confirm",2),bt=gt([p("template-management")],bt);var mt=Object.defineProperty,ft=Object.getOwnPropertyDescriptor,xt=(t,e,o,i)=>{for(var s,n=i>1?void 0:i?ft(e,o):e,r=t.length-1;r>=0;r--)(s=t[r])&&(n=(i?s(e,o,n):s(n))||n);return i&&n&&mt(e,o,n),n};let yt=null,_t=class extends d{constructor(){super(...arguments),this._i18n=new t(this),this.mode="add",this._templates=new i(this,w,!0),this._selectedTemplateId="",this._restoring=!1,this._formData={name:"",description:"",url:"",fields:[],buttonName:"",buttonSelector:""},this._inputMode="form",this._jsonText="",this._jsonError="",this._jsonDirty=!1}open(t){if(this._selectedTemplateId="",t){this._selectedTemplateId=t.templateId;const e=w.getById(t.templateId);this._formData={name:t.name,description:t.description||e?.description||"",url:t.url,fields:this._buildValueFields(t.templateId,t.values),buttonName:t.buttonName??"",buttonSelector:t.buttonSelector??""}}else yt?(this._restoring=!0,this._selectedTemplateId=yt.templateId,this._formData={name:yt.name,description:yt.description,url:yt.url,fields:[...yt.fields],buttonName:yt.buttonName,buttonSelector:yt.buttonSelector}):this._formData={name:"",description:"",url:"",fields:[],buttonName:"",buttonSelector:""};this._inputMode="form",this._jsonText=this._serializeFormData(),this._jsonError="",this._jsonDirty=!1,this.requestUpdate();const e=this.renderRoot.querySelector("#modal");e&&(e.open=!0)}updated(t){super.updated(t),this._restoring=!1}_buildValueFields(t,e){const o=Array.isArray(e)?e:Object.entries(e).map(([t,e])=>({name:t,selector:"",value:e})),i=w.getById(t);return i?i.fields.map(t=>{const e=o.find(e=>e.name===t.name)??o.find(e=>e.selector===t.selector);return{id:t.id,name:t.name,selector:t.selector,value:e?.value??""}}):o.map(t=>({id:crypto.randomUUID(),...t}))}close(){"add"===this.mode&&this._saveDraft();const t=this.renderRoot.querySelector("#modal");t&&(t.open=!1),this.dispatchEvent(new CustomEvent("modal-close",{bubbles:!0,composed:!0}))}_onTemplateChange(t){if(this._restoring)return;const e=t.target.value;if(this._selectedTemplateId=e,!e)return this._formData={name:"",description:"",url:"",fields:[],buttonName:"",buttonSelector:""},void this.requestUpdate();const o=w.getById(e);o&&(this._formData={name:this._formData.name||o.name,description:o.description,url:this._formData.url||o.url,fields:o.fields.map(t=>({id:t.id,name:t.name,selector:t.selector,value:""})),buttonName:this._formData.buttonName||o.button?.name||"",buttonSelector:this._formData.buttonSelector||o.button?.selector||""},this.requestUpdate())}_onFormChange(t){this._formData=t.detail,this.requestUpdate()}_serializeFormData(){const t=this._formData;return JSON.stringify([{name:t.name,description:t.description,url:t.url,templateId:this._selectedTemplateId,values:t.fields.map(t=>({name:t.name,selector:t.selector??"",value:t.value??""})),...t.buttonName?{buttonName:t.buttonName}:{},...t.buttonSelector?{buttonSelector:t.buttonSelector}:{}}],null,2)}_onModeChange(t){this._inputMode=t.detail.mode,"json"!==this._inputMode||this._jsonDirty||(this._jsonText=this._serializeFormData()),this._jsonError="",this.requestUpdate()}_onJsonChange(t){this._jsonText=t.detail.value,this._jsonError="",this._jsonDirty=!0,this.requestUpdate()}_saveDraft(){yt={...this._formData,fields:[...this._formData.fields],templateId:this._selectedTemplateId}}_submit(){if("json"===this._inputMode){try{const t=function(t){const e=L(t);if(!Array.isArray(e.values))throw new Error("values must be an array.");const o=e.values.map((t,e)=>{const o=F(t,`values[${e}]`);return{name:M(o.name,`values[${e}].name`),selector:U(o.selector),value:"string"==typeof o.value?o.value:""}});return{name:M(e.name,"name"),description:U(e.description),url:U(e.url),templateId:U(e.templateId),values:o,buttonName:U(e.buttonName)||void 0,buttonSelector:U(e.buttonSelector)||void 0}}(this._jsonText);this.dispatchEvent(new CustomEvent("data-submit",{detail:t,bubbles:!0,composed:!0})),this._clearDraft(),this.close()}catch{this._jsonError=this._i18n.t("config.jsonInvalid"),this.requestUpdate()}return}const t=this._formData;if(!t.name.trim())return;const e=t.fields.map(t=>({name:t.name,selector:t.selector??"",value:(t.value??"").trim()}));this.dispatchEvent(new CustomEvent("data-submit",{detail:{name:t.name.trim(),description:t.description.trim(),url:t.url.trim(),templateId:this._selectedTemplateId,values:e,buttonName:t.buttonName.trim()||void 0,buttonSelector:t.buttonSelector.trim()||void 0},bubbles:!0,composed:!0})),this._clearDraft(),this.close()}_clearDraft(){yt=null}render(){const t=this._templates.state,e="edit"===this.mode?this._i18n.t("data.edit"):"copy"===this.mode?this._i18n.t("data.copy"):this._i18n.t("data.new");return c`
       <modal-dialog id="modal" title=${e} size="large" @modal-close=${this.close}>
-        <div class="form-group">
-          <label>${this._i18n.t("data.selectTemplate")}</label>
-          <select @change=${this._onTemplateChange}>
-            <option value="" ?selected=${!this._selectedTemplateId}>${this._i18n.t("data.manual")}</option>
-            ${t.map(t=>c`<option value=${t.id} ?selected=${this._selectedTemplateId===t.id}>${t.name}</option>`)}
-          </select>
-        </div>
+        <form-mode-tabs
+          .active=${this._inputMode}
+          .formLabel=${this._i18n.t("config.modeForm")}
+          .jsonLabel=${this._i18n.t("config.modeJson")}
+          @mode-change=${this._onModeChange}
+        ></form-mode-tabs>
+        ${"form"===this._inputMode?c`
+          <div class="form-group">
+            <label>${this._i18n.t("data.selectTemplate")}</label>
+            <select @change=${this._onTemplateChange}>
+              <option value="" ?selected=${!this._selectedTemplateId}>${this._i18n.t("data.manual")}</option>
+              ${t.map(t=>c`<option value=${t.id} ?selected=${this._selectedTemplateId===t.id}>${t.name}</option>`)}
+            </select>
+          </div>
 
-        <form-config
-          mode="value"
-          .name=${this._formData.name}
-          .description=${this._formData.description}
-          .url=${this._formData.url}
-          .fields=${this._formData.fields}
-          .buttonName=${this._formData.buttonName}
-          .buttonSelector=${this._formData.buttonSelector}
-          @form-change=${this._onFormChange}
-        ></form-config>
+          <form-config
+            mode="value"
+            .name=${this._formData.name}
+            .description=${this._formData.description}
+            .url=${this._formData.url}
+            .fields=${this._formData.fields}
+            .buttonName=${this._formData.buttonName}
+            .buttonSelector=${this._formData.buttonSelector}
+            @form-change=${this._onFormChange}
+          ></form-config>
+        `:c`
+          <json-import-editor
+            .label=${this._i18n.t("config.jsonLabel")}
+            .hint=${this._i18n.t("config.jsonHint")}
+            .placeholder=${this._i18n.t("config.jsonDataPlaceholder")}
+            .value=${this._jsonText}
+            .error=${this._jsonError}
+            @json-change=${this._onJsonChange}
+          ></json-import-editor>
+        `}
 
         <div slot="footer" style="margin-top:16px">
           <button class="btn-cancel" @click=${this.close}>${this._i18n.t("config.cancel")}</button>
-          <button class="btn-primary" @click=${this._submit} ?disabled=${!this._formData.name.trim()}>${this._i18n.t("config.save")}</button>
+          <button class="btn-primary" @click=${this._submit} ?disabled=${"form"===this._inputMode?!this._formData.name.trim():!this._jsonText.trim()}>${this._i18n.t("config.save")}</button>
         </div>
       </modal-dialog>
-    `}};lt.styles=r`
+    `}};_t.styles=a`
     .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 16px; }
     label { font-size: 12px; font-weight: 600; color: #475569; }
     select {
@@ -449,7 +535,7 @@ import{I as t,B as e,g as o,S as i,d as s,s as n,a}from"./toast-notification-Di3
       border: 1px solid #e2e8f0; cursor: pointer; font-size: 13px; transition: background 0.15s;
     }
     .btn-cancel:hover { background: #f1f5f9; }
-  `,at([l({type:String})],lt.prototype,"mode",2),lt=at([p("data-wizard")],lt);var dt=Object.defineProperty,ct=Object.getOwnPropertyDescriptor,pt=(t,e,o,i)=>{for(var s,n=i>1?void 0:i?ct(e,o):e,a=t.length-1;a>=0;a--)(s=t[a])&&(n=(i?s(e,o,n):s(n))||n);return i&&n&&dt(e,o,n),n};let ht=class extends d{constructor(){super(...arguments),this._i18n=new t(this),this._records=new i(this,s,!0),this._searchQuery="",this._selectedIds=[],this._deleteTarget=[]}get _columns(){return[{key:"name",label:this._i18n.t("template.name"),sortable:!0,width:"160px"},{key:"url",label:this._i18n.t("template.url"),sortable:!1,width:"240px"},{key:"description",label:this._i18n.t("template.description"),sortable:!1}]}get _actions(){return[{key:"edit",label:this._i18n.t("config.edit")},{key:"copy",label:this._i18n.t("config.copy")},{key:"delete",label:this._i18n.t("config.delete")},{key:"extract",label:this._i18n.t("data.extractTemplate")},{key:"export",label:this._i18n.t("config.export")}]}get _filtered(){return v(this._records.state,this._searchQuery,["name","url"])}_onSearch(t){this._searchQuery=t.detail.value,this.requestUpdate()}_onSelection(t){this._selectedIds=t.detail,this.requestUpdate()}_onRowAction(t){const{action:e,row:o}=t.detail,i=o;switch(e){case"edit":this._editData=i,this._wizard.mode="edit",this._wizard.open(i);break;case"copy":this._wizard.mode="copy",this._wizard.open({...i,name:i.name+" (Copy)"});break;case"delete":this._deleteTarget=[i.id],this._confirm.title=this._i18n.t("data.deleteTitle"),this._confirm.message=this._i18n.t("data.deleteMsg",{name:i.name}),this._confirm.open=!0;break;case"extract":{const t=w.getById(i.templateId),e=i.values.length>0?i.values.map(t=>({id:t.name,name:t.name,selector:t.selector})):(t?.fields??[]).map(t=>({id:t.id,name:t.name,selector:t.selector})),o={id:"",name:i.name,description:i.description||t?.description||"",url:i.url,fields:e,button:i.buttonSelector?{name:i.buttonName||"",selector:i.buttonSelector}:void 0,createdAt:Date.now(),updatedAt:Date.now()};this._tmodal.mode="extract",this._tmodal.open(o);break}case"export":this._exportSelection([i.id])}}async _onConfirm(){if(this._deleteTarget.length){const t=this._deleteTarget.length;await s.deleteMany(this._deleteTarget),this._deleteTarget=[],this._selectedIds=[];const{showToast:e}=await y(async()=>{const{showToast:t}=await import("./toast-notification-Di32hrM7.js").then(t=>t.t);return{showToast:t}},__vite__mapDeps([0,1]));e(this._i18n.t("data.deleted",{count:t}),"success"),this.requestUpdate()}}async _onDataSubmit(t){const e=t.detail;this._editData?await s.update(this._editData.id,e):await s.add(e),this._editData=void 0}async _onExtractSubmit(t){const e=t.detail;await w.add(e);const{showToast:o}=await y(async()=>{const{showToast:t}=await import("./toast-notification-Di32hrM7.js").then(t=>t.t);return{showToast:t}},__vite__mapDeps([0,1]));o(this._i18n.t("data.templateExtracted"),"success")}_onBatchExport(){this._exportSelection(this._selectedIds)}_exportSelection(t){k(this._records.state.filter(e=>t.includes(e.id)),"data-records")}async _onBatchImport(t){try{const e=$(t.detail.content),o=await s.importFrom(e),{showToast:i}=await y(async()=>{const{showToast:t}=await import("./toast-notification-Di32hrM7.js").then(t=>t.t);return{showToast:t}},__vite__mapDeps([0,1]));i(this._i18n.t("data.imported",{count:o}),"success")}catch{const{showToast:t}=await y(async()=>{const{showToast:t}=await import("./toast-notification-Di32hrM7.js").then(t=>t.t);return{showToast:t}},__vite__mapDeps([0,1]));t(this._i18n.t("data.importFailed"),"error")}}_onBatchDelete(){this._deleteTarget=[...this._selectedIds],this._confirm.title=this._i18n.t("data.deleteBatchTitle"),this._confirm.message=this._i18n.t("data.deleteBatchMsg",{count:this._deleteTarget.length}),this._confirm.open=!0}_openAdd(){this._editData=void 0,this._wizard.mode="add",this._wizard.open()}render(){const t=this._filtered;return c`
+  `,xt([l({type:String})],_t.prototype,"mode",2),_t=xt([p("data-wizard")],_t);var wt=Object.defineProperty,vt=Object.getOwnPropertyDescriptor,kt=(t,e,o,i)=>{for(var s,n=i>1?void 0:i?vt(e,o):e,r=t.length-1;r>=0;r--)(s=t[r])&&(n=(i?s(e,o,n):s(n))||n);return i&&n&&wt(e,o,n),n};let $t=class extends d{constructor(){super(...arguments),this._i18n=new t(this),this._records=new i(this,s,!0),this._searchQuery="",this._selectedIds=[],this._deleteTarget=[]}get _columns(){return[{key:"name",label:this._i18n.t("template.name"),sortable:!0,width:"160px"},{key:"url",label:this._i18n.t("template.url"),sortable:!1,width:"240px"},{key:"description",label:this._i18n.t("template.description"),sortable:!1}]}get _actions(){return[{key:"edit",label:this._i18n.t("config.edit")},{key:"copy",label:this._i18n.t("config.copy")},{key:"delete",label:this._i18n.t("config.delete")},{key:"extract",label:this._i18n.t("data.extractTemplate")},{key:"export",label:this._i18n.t("config.export")}]}get _filtered(){return v(this._records.state,this._searchQuery,["name","url"])}_onSearch(t){this._searchQuery=t.detail.value,this.requestUpdate()}_onSelection(t){this._selectedIds=t.detail,this.requestUpdate()}_onRowAction(t){const{action:e,row:o}=t.detail,i=o;switch(e){case"edit":this._editData=i,this._wizard.mode="edit",this._wizard.open(i);break;case"copy":this._wizard.mode="copy",this._wizard.open({...i,name:i.name+" (Copy)"});break;case"delete":this._deleteTarget=[i.id],this._confirm.title=this._i18n.t("data.deleteTitle"),this._confirm.message=this._i18n.t("data.deleteMsg",{name:i.name}),this._confirm.open=!0;break;case"extract":{const t=w.getById(i.templateId),e=i.values.length>0?i.values.map(t=>({id:t.name,name:t.name,selector:t.selector})):(t?.fields??[]).map(t=>({id:t.id,name:t.name,selector:t.selector})),o={id:"",name:i.name,description:i.description||t?.description||"",url:i.url,fields:e,button:i.buttonSelector?{name:i.buttonName||"",selector:i.buttonSelector}:void 0,createdAt:Date.now(),updatedAt:Date.now()};this._tmodal.mode="extract",this._tmodal.open(o);break}case"export":this._exportSelection([i.id])}}async _onConfirm(){if(this._deleteTarget.length){const t=this._deleteTarget.length;await s.deleteMany(this._deleteTarget),this._deleteTarget=[],this._selectedIds=[];const{showToast:e}=await y(async()=>{const{showToast:t}=await import("./toast-notification-WwcTRqnw.js").then(t=>t.t);return{showToast:t}},__vite__mapDeps([0,1]));e(this._i18n.t("data.deleted",{count:t}),"success"),this.requestUpdate()}}async _onDataSubmit(t){const e=t.detail;this._editData?await s.update(this._editData.id,e):await s.add(e),this._editData=void 0}async _onExtractSubmit(t){const e=t.detail;await w.add(e);const{showToast:o}=await y(async()=>{const{showToast:t}=await import("./toast-notification-WwcTRqnw.js").then(t=>t.t);return{showToast:t}},__vite__mapDeps([0,1]));o(this._i18n.t("data.templateExtracted"),"success")}_onBatchExport(){this._exportSelection(this._selectedIds)}_exportSelection(t){k(this._records.state.filter(e=>t.includes(e.id)),"data-records")}async _onBatchImport(t){try{const e=$(t.detail.content),o=await s.importFrom(e),{showToast:i}=await y(async()=>{const{showToast:t}=await import("./toast-notification-WwcTRqnw.js").then(t=>t.t);return{showToast:t}},__vite__mapDeps([0,1]));i(this._i18n.t("data.imported",{count:o}),"success")}catch{const{showToast:t}=await y(async()=>{const{showToast:t}=await import("./toast-notification-WwcTRqnw.js").then(t=>t.t);return{showToast:t}},__vite__mapDeps([0,1]));t(this._i18n.t("data.importFailed"),"error")}}_onBatchDelete(){this._deleteTarget=[...this._selectedIds],this._confirm.title=this._i18n.t("data.deleteBatchTitle"),this._confirm.message=this._i18n.t("data.deleteBatchMsg",{count:this._deleteTarget.length}),this._confirm.open=!0}_openAdd(){this._editData=void 0,this._wizard.mode="add",this._wizard.open()}render(){const t=this._filtered;return c`
       <div class="top-row">
         <div class="top-row-left">
           <button class="add-btn" @click=${this._openAdd}>+ ${this._i18n.t("data.new")}</button>
@@ -479,7 +565,7 @@ import{I as t,B as e,g as o,S as i,d as s,s as n,a}from"./toast-notification-Di3
       <data-wizard @data-submit=${this._onDataSubmit}></data-wizard>
       <template-modal @template-submit=${this._onExtractSubmit}></template-modal>
       <confirm-dialog @confirm=${this._onConfirm}></confirm-dialog>
-    `}};ht.styles=r`
+    `}};$t.styles=a`
     :host { display: block; }
     .top-row {
       display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
@@ -494,7 +580,7 @@ import{I as t,B as e,g as o,S as i,d as s,s as n,a}from"./toast-notification-Di3
       white-space: nowrap; transition: background 0.15s;
     }
     .add-btn:hover { background: #1d4ed8; }
-  `,pt([h("data-wizard")],ht.prototype,"_wizard",2),pt([h("confirm-dialog")],ht.prototype,"_confirm",2),pt([h("template-modal")],ht.prototype,"_tmodal",2),ht=pt([p("data-management")],ht);var gt=Object.getOwnPropertyDescriptor;let ut=class extends d{constructor(){super(...arguments),this._i18n=new t(this),this._settings=new i(this,n)}connectedCallback(){super.connectedCallback(),this._settings.load()}_toggle(t){const e=t.target.checked;n.setCookieCopyEnabled(e)}render(){const t=this._settings.state.cookieCopyEnabled;return c`
+  `,kt([h("data-wizard")],$t.prototype,"_wizard",2),kt([h("confirm-dialog")],$t.prototype,"_confirm",2),kt([h("template-modal")],$t.prototype,"_tmodal",2),$t=kt([p("data-management")],$t);var St=Object.getOwnPropertyDescriptor;let Dt=class extends d{constructor(){super(...arguments),this._i18n=new t(this),this._settings=new i(this,n)}connectedCallback(){super.connectedCallback(),this._settings.load()}_toggle(t){const e=t.target.checked;n.setCookieCopyEnabled(e)}render(){const t=this._settings.state.cookieCopyEnabled;return c`
       <div class="section">
         <h3 class="section-title">${this._i18n.t("cookie.title")}</h3>
 
@@ -535,7 +621,7 @@ import{I as t,B as e,g as o,S as i,d as s,s as n,a}from"./toast-notification-Di3
           </ul>
         </div>
       </div>
-    `}};ut.styles=r`
+    `}};Dt.styles=a`
     :host { display: block; }
     .section { margin-bottom: 24px; }
     .section-title {
@@ -600,7 +686,7 @@ import{I as t,B as e,g as o,S as i,d as s,s as n,a}from"./toast-notification-Di3
       min-width: 60px; justify-content: center;
     }
     .kb-desc { color: #166534; }
-  `,ut=((t,e,o,i)=>{for(var s,n=i>1?void 0:i?gt(e,o):e,a=t.length-1;a>=0;a--)(s=t[a])&&(n=s(n)||n);return n})([p("cookie-settings")],ut);var bt=Object.getOwnPropertyDescriptor;const ft={zh:{title:"用户指南",tocTitle:"目录",intro:"FormBridge 是一款 Chrome 浏览器扩展，提供两大核心功能：<strong>表单自动填充</strong>和<strong>Cookie 跨域复制</strong>。",pages:[{id:"popup",title:"弹窗页",sections:[{id:"popup-overview",title:"界面概览",body:c`
+  `,Dt=((t,e,o,i)=>{for(var s,n=i>1?void 0:i?St(e,o):e,r=t.length-1;r>=0;r--)(s=t[r])&&(n=s(n)||n);return n})([p("cookie-settings")],Dt);var Ct=Object.getOwnPropertyDescriptor;const Tt={zh:{title:"用户指南",tocTitle:"目录",intro:"FormBridge 是一款 Chrome 浏览器扩展，提供两大核心功能：<strong>表单自动填充</strong>和<strong>Cookie 跨域复制</strong>。",pages:[{id:"popup",title:"弹窗页",sections:[{id:"popup-overview",title:"界面概览",body:c`
             <p>点击浏览器工具栏的扩展图标即可打开弹窗。从上到下分为三个区域：</p>
             <ul>
               <li><strong>搜索栏</strong> — 按名称或网址过滤数据卡片。</li>
@@ -766,7 +852,7 @@ import{I as t,B as e,g as o,S as i,d as s,s as n,a}from"./toast-notification-Di3
         <li><strong>Drafts survive accidental close.</strong> Re-opening the modal restores unsaved content.</li>
         <li><strong>Selector fallback.</strong> If the CSS selector doesn't match, the extension tries field-name-based fallback.</li>
       </ul>
-    `}}};let mt=class extends d{constructor(){super(...arguments),this._i18n=new t(this)}_scrollTo(t){const e=this.shadowRoot?.getElementById(t);e&&e.scrollIntoView({behavior:"smooth",block:"start"})}_pageDotClass(t){return 0===t?"popup":"config"}render(){const t=a(),e=ft[t]??ft.en;return c`
+    `}}};let jt=class extends d{constructor(){super(...arguments),this._i18n=new t(this)}_scrollTo(t){const e=this.shadowRoot?.getElementById(t);e&&e.scrollIntoView({behavior:"smooth",block:"start"})}_pageDotClass(t){return 0===t?"popup":"config"}render(){const t=r(),e=Tt[t]??Tt.en;return c`
       <nav class="sidebar">
         <h4>${e.tocTitle}</h4>
         <ul class="toc-list">
@@ -812,7 +898,7 @@ import{I as t,B as e,g as o,S as i,d as s,s as n,a}from"./toast-notification-Di3
           ${e.tips.body}
         </div>
       </div>
-    `}};mt.styles=r`
+    `}};jt.styles=a`
     :host {
       display: flex; height: 100%; overflow: hidden;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -947,7 +1033,7 @@ import{I as t,B as e,g as o,S as i,d as s,s as n,a}from"./toast-notification-Di3
       font-size: 12px; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
       color: #1e293b;
     }
-  `,mt=((t,e,o,i)=>{for(var s,n=i>1?void 0:i?bt(e,o):e,a=t.length-1;a>=0;a--)(s=t[a])&&(n=s(n)||n);return n})([p("guide-page")],mt);var xt=Object.defineProperty,yt=Object.getOwnPropertyDescriptor,_t=(t,e,o,i)=>{for(var s,n=i>1?void 0:i?yt(e,o):e,a=t.length-1;a>=0;a--)(s=t[a])&&(n=(i?s(e,o,n):s(n))||n);return i&&n&&xt(e,o,n),n};let wt=class extends d{constructor(){super(...arguments),this._i18n=new t(this),this._tab="data"}_onTabChange(t){this._tab=t.detail}_toggleLang(){n.setLanguage("en"===a()?"zh":"en")}render(){return c`
+  `,jt=((t,e,o,i)=>{for(var s,n=i>1?void 0:i?Ct(e,o):e,r=t.length-1;r>=0;r--)(s=t[r])&&(n=s(n)||n);return n})([p("guide-page")],jt);var Et=Object.defineProperty,It=Object.getOwnPropertyDescriptor,zt=(t,e,o,i)=>{for(var s,n=i>1?void 0:i?It(e,o):e,r=t.length-1;r>=0;r--)(s=t[r])&&(n=(i?s(e,o,n):s(n))||n);return i&&n&&Et(e,o,n),n};let Ot=class extends d{constructor(){super(...arguments),this._i18n=new t(this),this._tab="data"}_onTabChange(t){this._tab=t.detail}_toggleLang(){n.setLanguage("en"===r()?"zh":"en")}render(){return c`
       <div class="main">
         <div class="content-card">
           <tabs-nav .active=${this._tab} @tab-change=${this._onTabChange} @toggle-lang=${this._toggleLang}></tabs-nav>
@@ -957,7 +1043,7 @@ import{I as t,B as e,g as o,S as i,d as s,s as n,a}from"./toast-notification-Di3
         </div>
       </div>
       <toast-notification></toast-notification>
-    `}};wt.styles=r`
+    `}};Ot.styles=a`
     :host {
       display: flex; flex-direction: column;
       height: 100vh;
@@ -980,4 +1066,4 @@ import{I as t,B as e,g as o,S as i,d as s,s as n,a}from"./toast-notification-Di3
       flex: 1; overflow-y: auto;
       padding: 24px 32px 32px;
     }
-  `,_t([g()],wt.prototype,"_tab",2),wt=_t([p("config-app")],wt);
+  `,zt([u()],Ot.prototype,"_tab",2),Ot=zt([p("config-app")],Ot);

@@ -40,6 +40,13 @@ export default {
   'config.noData': '暂无数据',
   'config.noTableData': '暂无数据',
   'config.actions': '操作',
+  'config.modeForm': '表单',
+  'config.modeJson': 'JSON 导入',
+  'config.jsonLabel': '粘贴 JSON',
+  'config.jsonHint': '支持单个对象或仅含一项的数组',
+  'config.jsonTemplatePlaceholder': '[{ "name": "登录", "fields": [] }]',
+  'config.jsonDataPlaceholder': '[{ "name": "开发账号", "values": [] }]',
+  'config.jsonInvalid': 'JSON 无效，请检查结构后重试。',
 
   // Template Form
   'template.new': '新建模板',

@@ -40,6 +40,13 @@ export default {
   'config.noData': 'No data',
   'config.noTableData': 'No data',
   'config.actions': 'Actions',
+  'config.modeForm': 'Form',
+  'config.modeJson': 'JSON Import',
+  'config.jsonLabel': 'Paste JSON',
+  'config.jsonHint': 'Accepts one object or a single-item array',
+  'config.jsonTemplatePlaceholder': '[{ "name": "Login", "fields": [] }]',
+  'config.jsonDataPlaceholder': '[{ "name": "Dev account", "values": [] }]',
+  'config.jsonInvalid': 'Invalid JSON. Check the structure and try again.',
 
   // Template Form
   'template.new': 'New Template',

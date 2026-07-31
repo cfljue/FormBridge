@@ -1,0 +1,4 @@
+interface:
+  display_name: "Extract Login Form"
+  short_description: "Return importable FormBridge login JSON"
+  default_prompt: "Use $extract-login-form to analyze this login page and return a FormBridge template as directly copyable JSON."

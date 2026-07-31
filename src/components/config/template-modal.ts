@@ -3,7 +3,11 @@ import { customElement, property } from 'lit/decorators.js';
 import { I18nController } from '@i18n/index';
 import { type Template, type TemplateField } from '@app-types/models';
 import { type FormConfigData } from '@shared/form-config';
+import { type FormInputMode } from '@shared/form-mode-tabs';
+import { parseTemplateJson } from '@utils/direct-json-import';
 import '@shared/form-config';
+import '@shared/form-mode-tabs';
+import '@shared/json-import-editor';
 import '@shared/modal-dialog';
 
 let _templateDraft: FormConfigData | null = null;
@@ -30,6 +34,10 @@ export class TemplateModal extends LitElement {
   @property({ type: Object }) data: Partial<Template> = {};
 
   private _formData: FormConfigData = { name: '', description: '', url: '', fields: [], buttonName: '', buttonSelector: '' };
+  private _inputMode: FormInputMode = 'form';
+  private _jsonText = '';
+  private _jsonError = '';
+  private _jsonDirty = false;
 
   open(template?: Template) {
     if (template) {
@@ -47,6 +55,10 @@ export class TemplateModal extends LitElement {
     } else {
       this._formData = { name: '', description: '', url: '', fields: [], buttonName: '', buttonSelector: '' };
     }
+    this._inputMode = 'form';
+    this._jsonText = this._serializeFormData();
+    this._jsonError = '';
+    this._jsonDirty = false;
     this.requestUpdate();
     const modal = this.renderRoot.querySelector('#modal') as HTMLElement & { open: boolean };
     if (modal) modal.open = true;
@@ -64,7 +76,46 @@ export class TemplateModal extends LitElement {
     this.requestUpdate();
   }
 
+  private _serializeFormData() {
+    const d = this._formData;
+    return JSON.stringify([{
+      name: d.name,
+      description: d.description,
+      url: d.url,
+      fields: d.fields.map((field) => ({ name: field.name, selector: field.selector ?? '' })),
+      ...(d.buttonSelector.trim() ? { button: { name: d.buttonName || 'Submit', selector: d.buttonSelector } } : {}),
+    }], null, 2);
+  }
+
+  private _onModeChange(event: CustomEvent<{ mode: FormInputMode }>) {
+    this._inputMode = event.detail.mode;
+    if (this._inputMode === 'json' && !this._jsonDirty) this._jsonText = this._serializeFormData();
+    this._jsonError = '';
+    this.requestUpdate();
+  }
+
+  private _onJsonChange(event: CustomEvent<{ value: string }>) {
+    this._jsonText = event.detail.value;
+    this._jsonError = '';
+    this._jsonDirty = true;
+    this.requestUpdate();
+  }
+
   private _submit() {
+    if (this._inputMode === 'json') {
+      try {
+        const detail = parseTemplateJson(this._jsonText);
+        this.dispatchEvent(new CustomEvent('template-submit', {
+          detail, bubbles: true, composed: true,
+        }));
+        this._clearDraft();
+        this.close();
+      } catch {
+        this._jsonError = this._i18n.t('config.jsonInvalid');
+        this.requestUpdate();
+      }
+      return;
+    }
     const d = this._formData;
     if (!d.name.trim()) return;
     const fields: TemplateField[] = d.fields
@@ -91,19 +142,36 @@ export class TemplateModal extends LitElement {
     const title = this.mode === 'edit' ? this._i18n.t('template.edit') : this.mode === 'copy' ? this._i18n.t('template.copy') : this.mode === 'extract' ? this._i18n.t('template.extract') : this._i18n.t('template.new');
     return html`
       <modal-dialog id="modal" title=${title} size="large" @modal-close=${this.close}>
-        <form-config
-          mode="definition"
-          .name=${this._formData.name}
-          .description=${this._formData.description}
-          .url=${this._formData.url}
-          .fields=${this._formData.fields}
-          .buttonName=${this._formData.buttonName}
-          .buttonSelector=${this._formData.buttonSelector}
-          @form-change=${this._onFormChange}
-        ></form-config>
+        <form-mode-tabs
+          .active=${this._inputMode}
+          .formLabel=${this._i18n.t('config.modeForm')}
+          .jsonLabel=${this._i18n.t('config.modeJson')}
+          @mode-change=${this._onModeChange}
+        ></form-mode-tabs>
+        ${this._inputMode === 'form' ? html`
+          <form-config
+            mode="definition"
+            .name=${this._formData.name}
+            .description=${this._formData.description}
+            .url=${this._formData.url}
+            .fields=${this._formData.fields}
+            .buttonName=${this._formData.buttonName}
+            .buttonSelector=${this._formData.buttonSelector}
+            @form-change=${this._onFormChange}
+          ></form-config>
+        ` : html`
+          <json-import-editor
+            .label=${this._i18n.t('config.jsonLabel')}
+            .hint=${this._i18n.t('config.jsonHint')}
+            .placeholder=${this._i18n.t('config.jsonTemplatePlaceholder')}
+            .value=${this._jsonText}
+            .error=${this._jsonError}
+            @json-change=${this._onJsonChange}
+          ></json-import-editor>
+        `}
         <div slot="footer">
           <button class="btn-cancel" @click=${this.close}>${this._i18n.t('config.cancel')}</button>
-          <button class="btn-primary" @click=${this._submit} ?disabled=${!this._formData.name.trim()}>${this._i18n.t('config.save')}</button>
+          <button class="btn-primary" @click=${this._submit} ?disabled=${this._inputMode === 'form' ? !this._formData.name.trim() : !this._jsonText.trim()}>${this._i18n.t('config.save')}</button>
         </div>
       </modal-dialog>
     `;
