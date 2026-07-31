@@ -1,7 +1,7 @@
 const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/toast-notification-k-5Jv9PO.js","assets/lit-D6WVJR7_.js"])))=>i.map(i=>d[i]);
 import{I as t,B as e,g as o,S as i,d as s,s as n,a}from"./toast-notification-k-5Jv9PO.js";import{i as r,n as l,a as d,b as c,t as p,e as h,r as g}from"./lit-D6WVJR7_.js";var u=Object.defineProperty,b=Object.getOwnPropertyDescriptor,f=(t,e,o,i)=>{for(var s,n=i>1?void 0:i?b(e,o):e,a=t.length-1;a>=0;a--)(s=t[a])&&(n=(i?s(e,o,n):s(n))||n);return i&&n&&u(e,o,n),n};let m=class extends d{constructor(){super(...arguments),this._i18n=new t(this),this.active="data"}_select(t){this.active=t,this.dispatchEvent(new CustomEvent("tab-change",{detail:t,bubbles:!0,composed:!0}))}render(){return c`
       <div class="brand">
-        <span class="logo-icon">&#x25C6;</span>
+        <img class="logo-icon" src="/icons/icon-48.png" alt="" />
         ${this._i18n.t("config.title")}
       </div>
       <div class="tabs">
@@ -26,9 +26,7 @@ import{I as t,B as e,g as o,S as i,d as s,s as n,a}from"./toast-notification-k-5
       margin-right: 24px; white-space: nowrap;
     }
     .logo-icon {
-      width: 24px; height: 24px; background: #2563eb; border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
-      color: #fff; font-size: 13px;
+      width: 28px; height: 28px; display: block; flex-shrink: 0;
     }
     .tabs {
       display: flex; align-items: center;
@@ -134,7 +132,7 @@ import{I as t,B as e,g as o,S as i,d as s,s as n,a}from"./toast-notification-k-5
     button:hover:not(:disabled) { background: #f1f5f9; border-color: #cbd5e1; }
     button:disabled { opacity: 0.4; cursor: not-allowed; }
     .btn-delete:hover:not(:disabled) { color: #dc2626; border-color: #fecaca; background: #fef2f2; }
-  `,z([l({type:Number})],O.prototype,"selectedCount",2),z([l({type:Boolean})],O.prototype,"showImport",2),z([l({type:Boolean})],O.prototype,"showExport",2),z([l({type:Boolean})],O.prototype,"showDelete",2),O=z([p("batch-toolbar")],O);var j=Object.defineProperty,A=Object.getOwnPropertyDescriptor,R=(t,e,o,i)=>{for(var s,n=i>1?void 0:i?A(e,o):e,a=t.length-1;a>=0;a--)(s=t[a])&&(n=(i?s(e,o,n):s(n))||n);return i&&n&&j(e,o,n),n};let B=class extends d{constructor(){super(...arguments),this.open=!1,this.title="Confirm",this.message="Are you sure?",this.confirmLabel="Delete",this.cancelLabel="Cancel"}confirm(){this.open=!1,this.dispatchEvent(new CustomEvent("confirm",{bubbles:!0,composed:!0}))}cancel(){this.open=!1,this.dispatchEvent(new CustomEvent("cancel",{bubbles:!0,composed:!0}))}render(){return this.open?c`
+  `,z([l({type:Number})],O.prototype,"selectedCount",2),z([l({type:Boolean})],O.prototype,"showImport",2),z([l({type:Boolean})],O.prototype,"showExport",2),z([l({type:Boolean})],O.prototype,"showDelete",2),O=z([p("batch-toolbar")],O);var A=Object.defineProperty,j=Object.getOwnPropertyDescriptor,R=(t,e,o,i)=>{for(var s,n=i>1?void 0:i?j(e,o):e,a=t.length-1;a>=0;a--)(s=t[a])&&(n=(i?s(e,o,n):s(n))||n);return i&&n&&A(e,o,n),n};let B=class extends d{constructor(){super(...arguments),this.open=!1,this.title="Confirm",this.message="Are you sure?",this.confirmLabel="Delete",this.cancelLabel="Cancel"}confirm(){this.open=!1,this.dispatchEvent(new CustomEvent("confirm",{bubbles:!0,composed:!0}))}cancel(){this.open=!1,this.dispatchEvent(new CustomEvent("cancel",{bubbles:!0,composed:!0}))}render(){return this.open?c`
       <div class="overlay" @click=${this.cancel}>
         <div class="dialog" @click=${t=>t.stopPropagation()}>
           <h3 class="title">${this.title}</h3>

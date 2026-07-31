@@ -16,9 +16,7 @@ export class TabsNav extends LitElement {
       margin-right: 24px; white-space: nowrap;
     }
     .logo-icon {
-      width: 24px; height: 24px; background: #2563eb; border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
-      color: #fff; font-size: 13px;
+      width: 28px; height: 28px; display: block; flex-shrink: 0;
     }
     .tabs {
       display: flex; align-items: center;
@@ -63,7 +61,7 @@ export class TabsNav extends LitElement {
   render() {
     return html`
       <div class="brand">
-        <span class="logo-icon">&#x25C6;</span>
+        <img class="logo-icon" src="/icons/icon-48.png" alt="" />
         ${this._i18n.t('config.title')}
       </div>
       <div class="tabs">
