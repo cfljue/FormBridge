@@ -1,6 +1,6 @@
 export default {
   // Popup
-  'popup.title': 'Form Manege',
+  'popup.title': 'FormBridge',
   'popup.configure': 'Configure',
   'popup.search': 'Search config...',
   'popup.cookieCopy': 'Cookie Copy',
@@ -21,7 +21,7 @@ export default {
   'popup.matchBadge': 'Match',
 
   // Config - Common
-  'config.title': 'Form Manege',
+  'config.title': 'FormBridge',
   'config.subtitle': 'Manage form templates and data for auto-fill',
   'config.tabTemplates': 'Templates',
   'config.tabData': 'Data',

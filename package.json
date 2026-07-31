@@ -1,5 +1,5 @@
 {
-  "name": "form-manege",
+  "name": "form-bridge",
   "version": "1.0.0",
   "description": "Browser extension for cross-domain cookie/storage copy and form auto-fill",
   "type": "module",

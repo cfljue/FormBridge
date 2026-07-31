@@ -1,4 +1,4 @@
-# Form Manege
+# FormBridge
 
 Chrome 扩展（Manifest V3），面向开发者的表单管理工具箱。
 
@@ -69,7 +69,7 @@ npx tsc --noEmit
 ## 项目结构
 
 ```
-form-manege/
+form-bridge/
 ├── src/
 │   ├── background/        # Service Worker，消息路由
 │   ├── content/           # 注入页面的内容脚本

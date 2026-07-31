@@ -1,6 +1,6 @@
 export default {
   // Popup
-  'popup.title': '表单管理',
+  'popup.title': 'FormBridge',
   'popup.configure': '配置',
   'popup.search': '搜索配置...',
   'popup.cookieCopy': 'Cookie 复制',
@@ -21,7 +21,7 @@ export default {
   'popup.matchBadge': '匹配',
 
   // Config - Common
-  'config.title': '表单管理',
+  'config.title': 'FormBridge',
   'config.subtitle': '管理表单模板和数据，用于自动填充',
   'config.tabTemplates': '模板',
   'config.tabData': '数据',

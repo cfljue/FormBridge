@@ -11,7 +11,7 @@ const content: Record<Locale, Content> = {
   zh: {
     title: '用户指南',
     tocTitle: '目录',
-    intro: '表单管理是一款 Chrome 浏览器扩展，提供两大核心功能：<strong>表单自动填充</strong>和<strong>Cookie 跨域复制</strong>。',
+    intro: 'FormBridge 是一款 Chrome 浏览器扩展，提供两大核心功能：<strong>表单自动填充</strong>和<strong>Cookie 跨域复制</strong>。',
     pages: [
       {
         id: 'popup', title: '弹窗页',
@@ -121,7 +121,7 @@ const content: Record<Locale, Content> = {
   en: {
     title: 'User Guide',
     tocTitle: 'Contents',
-    intro: 'Form Manage is a Chrome extension with two core features: <strong>Form Auto-fill</strong> and <strong>Cross-domain Cookie Copy</strong>.',
+    intro: 'FormBridge is a Chrome extension with two core features: <strong>Form Auto-fill</strong> and <strong>Cross-domain Cookie Copy</strong>.',
     pages: [
       {
         id: 'popup', title: 'Popup',

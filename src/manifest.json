@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Form Manege",
+  "name": "FormBridge",
   "version": "1.0.0",
   "description": "Cross-domain cookie/storage copy, data-driven navigation, and form auto-fill",
   "permissions": [
@@ -13,7 +13,7 @@
   "host_permissions": ["<all_urls>"],
   "action": {
     "default_popup": "src/popup/index.html",
-    "default_title": "Form Manege"
+    "default_title": "FormBridge"
   },
   "options_ui": {
     "page": "src/config/index.html",
