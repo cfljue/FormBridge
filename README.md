@@ -60,7 +60,29 @@ Then ask Codex: `Use the skill at skills/extract-login-form to analyze https://e
 
 ## Screenshots
 
-Real product screenshots are being prepared for the first public release. See [`store-assets/screenshots/README.md`](store-assets/screenshots/README.md) for the exact capture checklist.
+### Data management
+
+Manage reusable data records for repeated form filling and account switching.
+
+![FormBridge data management](docs/images/01-data-management.png)
+
+### Template management
+
+Define reusable field selectors and submission actions for matching pages.
+
+![FormBridge template management](docs/images/02-template-management.png)
+
+### Cookie and storage transfer
+
+Enable cross-page Cookie and Web Storage transfer explicitly, with usage instructions and safety notices visible before activation.
+
+![FormBridge Cookie and storage transfer settings](docs/images/03-cookie-transfer.png)
+
+### Popup workflow
+
+Search matching records and trigger form filling directly from the extension popup.
+
+![FormBridge popup workflow](docs/images/04-popup-workflow.png)
 
 ## Install
 
@@ -114,7 +136,7 @@ FormBridge requests only the browser capabilities needed for its core workflows:
 | `tabs` | Open saved URLs, read the active tab URL, and reload after a transfer |
 | `<all_urls>` | Allow the same user-created template and transfer workflow to work on any site you choose |
 
-Read the full [Privacy Policy](PRIVACY.md) and [Security Policy](SECURITY.md).
+Read the full [Privacy Policy](docs/PRIVACY.md) and [Security Policy](.github/SECURITY.md).
 
 ## Development
 
@@ -126,11 +148,11 @@ npm run test:skill   # verify the Playwright form-analysis Skill
 npm run check        # type-check, test, and production build
 ```
 
-The project uses TypeScript strict mode, Lit 3, Vite, CRXJS, and Vitest. Manual release checks are documented in [`TEST_PLAN.md`](TEST_PLAN.md).
+The project uses TypeScript strict mode, Lit 3, Vite, CRXJS, and Vitest. Manual release checks are documented in [`docs/TEST_PLAN.md`](docs/TEST_PLAN.md).
 
 ## Contributing
 
-Bug reports, focused feature proposals, documentation fixes, and pull requests are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md), follow the [Code of Conduct](CODE_OF_CONDUCT.md), and review the [changelog](CHANGELOG.md) before submitting a change.
+Bug reports, focused feature proposals, documentation fixes, and pull requests are welcome. Start with the [contributing guide](.github/CONTRIBUTING.md), follow the [Code of Conduct](.github/CODE_OF_CONDUCT.md), and review the [changelog](CHANGELOG.md) before submitting a change.
 
 ## License
 

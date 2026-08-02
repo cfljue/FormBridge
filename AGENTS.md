@@ -14,7 +14,7 @@ npm install            # 安装依赖
 npx tsc --noEmit       # 仅 TypeScript 类型检查
 ```
 
-构建后加载扩展：Chrome → `chrome://extensions` → 开发者模式 → 加载已解压的扩展程序 → 选择 `dist/` 目录。`TEST_PLAN.md` 在项目根目录，含完整手动测试清单。
+构建后加载扩展：Chrome → `chrome://extensions` → 开发者模式 → 加载已解压的扩展程序 → 选择 `dist/` 目录。`docs/TEST_PLAN.md` 含完整手动测试清单。
 
 ## 架构概览
 

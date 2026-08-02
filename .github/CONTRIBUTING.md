@@ -16,7 +16,7 @@ npm test
 npm run build
 ```
 
-Load `dist/` as an unpacked extension from `chrome://extensions` for manual testing. Follow `TEST_PLAN.md` for browser-level checks.
+Load `dist/` as an unpacked extension from `chrome://extensions` for manual testing. Follow [`docs/TEST_PLAN.md`](../docs/TEST_PLAN.md) for browser-level checks.
 
 ## Pull requests
 

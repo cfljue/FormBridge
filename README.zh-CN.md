@@ -59,7 +59,29 @@ npx playwright install chromium
 
 ## 界面截图
 
-首个公开版本的真实界面截图正在准备中。截图尺寸和内容清单见 [`store-assets/screenshots/README.md`](store-assets/screenshots/README.md)。
+### 数据管理
+
+管理可重复使用的表单数据，适用于重复填表和多账号切换。
+
+![FormBridge 数据管理](docs/images/01-data-management.png)
+
+### 模板管理
+
+为匹配页面配置可复用的字段选择器和提交操作。
+
+![FormBridge 模板管理](docs/images/02-template-management.png)
+
+### Cookie 和存储迁移
+
+显式启用跨页面 Cookie 与 Web Storage 迁移，并在开启前展示完整使用方法和安全提示。
+
+![FormBridge Cookie 和存储迁移设置](docs/images/03-cookie-transfer.png)
+
+### 弹窗工作流
+
+在扩展弹窗中搜索匹配的数据记录并触发表单填充。
+
+![FormBridge 弹窗工作流](docs/images/04-popup-workflow.png)
 
 ## 安装
 
@@ -111,7 +133,7 @@ npm run build
 | `tabs` | 打开记录的网址、读取当前网址，并在迁移后刷新页面 |
 | `<all_urls>` | 让你创建的模板和迁移操作能够用于你选择的任意网站 |
 
-请阅读完整的[隐私政策](PRIVACY.md)和[安全政策](SECURITY.md)。
+请阅读完整的[隐私政策](docs/PRIVACY.md)和[安全政策](.github/SECURITY.md)。
 
 ## 开发
 
@@ -123,11 +145,11 @@ npm run test:skill   # 验证 Playwright 表单分析 Skill
 npm run check        # 类型检查、测试和生产构建
 ```
 
-项目使用 TypeScript strict mode、Lit 3、Vite、CRXJS 与 Vitest。人工发布检查见 [`TEST_PLAN.md`](TEST_PLAN.md)。
+项目使用 TypeScript strict mode、Lit 3、Vite、CRXJS 与 Vitest。人工发布检查见 [`docs/TEST_PLAN.md`](docs/TEST_PLAN.md)。
 
 ## 参与贡献
 
-欢迎提交 Bug、聚焦的功能建议、文档改进和 Pull Request。请先阅读 [CONTRIBUTING.md](CONTRIBUTING.md)、[行为准则](CODE_OF_CONDUCT.md)与[更新日志](CHANGELOG.md)。
+欢迎提交 Bug、聚焦的功能建议、文档改进和 Pull Request。请先阅读[贡献指南](.github/CONTRIBUTING.md)、[行为准则](.github/CODE_OF_CONDUCT.md)与[更新日志](CHANGELOG.md)。
 
 ## 许可证
 

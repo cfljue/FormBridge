@@ -42,4 +42,4 @@ English (default), Chinese (Simplified)
 
 - Homepage: https://github.com/cfljue/FormBridge
 - Support: https://github.com/cfljue/FormBridge/issues
-- Privacy policy: https://github.com/cfljue/FormBridge/blob/main/PRIVACY.md
+- Privacy policy: https://github.com/cfljue/FormBridge/blob/main/docs/PRIVACY.md

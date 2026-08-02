@@ -18,7 +18,7 @@
 - [ ] Paste the listing copy from `listing-en.md` and `listing-zh-CN.md`
 - [ ] Upload `small-promo-tile.png` and, if desired, `marquee-promo-tile.png`
 - [ ] Upload at least one real 1280×800 product screenshot using `screenshots/README.md`
-- [ ] Complete the Privacy practices questionnaire using `PRIVACY.md` and the permission explanations below
+- [ ] Complete the Privacy practices questionnaire using [`docs/PRIVACY.md`](../docs/PRIVACY.md) and the permission explanations below
 - [ ] Confirm the single-purpose description: “Move authorized browser context between pages and fill reusable form data.”
 - [ ] Confirm that user data is not sold, used for advertising, or sent to external services
 - [ ] Submit for review and record the final store URL in both READMEs

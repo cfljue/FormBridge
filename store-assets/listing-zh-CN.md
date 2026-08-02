@@ -38,4 +38,4 @@ FormBridge 仅用于你有权访问的账号、网站和测试环境。迁移的
 
 - 项目主页：https://github.com/cfljue/FormBridge
 - 用户支持：https://github.com/cfljue/FormBridge/issues
-- 隐私政策：https://github.com/cfljue/FormBridge/blob/main/PRIVACY.md
+- 隐私政策：https://github.com/cfljue/FormBridge/blob/main/docs/PRIVACY.md
