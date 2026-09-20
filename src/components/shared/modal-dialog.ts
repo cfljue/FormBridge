@@ -54,7 +54,9 @@ export class ModalDialog extends LitElement {
   }
 
   private _onKeyDown = (e: KeyboardEvent) => {
-    if (e.key === 'Escape') this.close();
+    // Only the open dialog reacts: while closed it must not fire modal-close, which would make
+    // the owner recreate a draft it already submitted.
+    if (e.key === 'Escape' && this.open) this.close();
   };
 
   connectedCallback() {

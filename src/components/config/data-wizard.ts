@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import { live } from 'lit/directives/live.js';
 import { I18nController } from '@i18n/index';
 import { StoreController } from '@store/store-controller';
 import { templateStore } from '@store/template-store';
@@ -13,7 +14,7 @@ import '@shared/json-import-editor';
 import '@shared/skill-prompt-card';
 import '@shared/modal-dialog';
 
-let _dataDraft: (FormConfigData & { templateId: string }) | null = null;
+let _dataDraft: FormConfigData | null = null;
 
 @customElement('data-wizard')
 export class DataWizard extends LitElement {
@@ -38,6 +39,9 @@ export class DataWizard extends LitElement {
       border: 1px solid #e2e8f0; cursor: pointer; font-size: 13px; transition: background 0.15s;
     }
     .btn-cancel:hover { background: #f1f5f9; }
+    .form-error {
+      color: #dc2626; font-size: 12px; margin-right: auto; align-self: center;
+    }
   `;
 
   private _i18n = new I18nController(this);
@@ -45,14 +49,16 @@ export class DataWizard extends LitElement {
 
   private _templates = new StoreController(this, templateStore, true);
   private _selectedTemplateId = '';
-  private _restoring = false;
+  private _isOpen = false;
   private _formData: FormConfigData = { name: '', description: '', url: '', fields: [], buttonName: '', buttonSelector: '' };
   private _inputMode: FormInputMode = 'form';
   private _jsonText = '';
   private _jsonError = '';
   private _jsonDirty = false;
+  private _invalidFieldIds: string[] = [];
 
   open(record?: DataRecord) {
+    this._isOpen = true;
     this._selectedTemplateId = '';
     if (record) {
       this._selectedTemplateId = record.templateId;
@@ -66,8 +72,6 @@ export class DataWizard extends LitElement {
         buttonSelector: record.buttonSelector ?? '',
       };
     } else if (_dataDraft) {
-      this._restoring = true;
-      this._selectedTemplateId = _dataDraft.templateId;
       this._formData = {
         name: _dataDraft.name,
         description: _dataDraft.description,
@@ -83,14 +87,10 @@ export class DataWizard extends LitElement {
     this._jsonText = this._serializeFormData();
     this._jsonError = '';
     this._jsonDirty = false;
+    this._invalidFieldIds = [];
     this.requestUpdate();
     const modal = this.renderRoot.querySelector('#modal') as HTMLElement & { open: boolean };
     if (modal) modal.open = true;
-  }
-
-  updated(_changedProperties: Map<string, unknown>) {
-    super.updated(_changedProperties);
-    this._restoring = false;
   }
 
   private _buildValueFields(templateId: string, values: DataFieldValue[]) {
@@ -103,19 +103,25 @@ export class DataWizard extends LitElement {
     if (!tmpl) return vArr.map((v) => ({ id: crypto.randomUUID(), ...v }));
     return tmpl.fields.map((f) => {
       const saved = vArr.find((v) => v.name === f.name) ?? vArr.find((v) => v.selector === f.selector);
-      return { id: f.id, name: f.name, selector: f.selector, value: saved?.value ?? '' };
+      return { id: f.id, name: f.name, selector: f.selector, value: saved?.value ?? '', inputType: saved?.inputType ?? f.inputType };
     });
   }
 
   close() {
-    if (this.mode === 'add') this._saveDraft();
+    this._close(true);
+  }
+
+  private _close(saveDraft: boolean) {
+    // Hidden dialogs also receive Escape; do not recreate a submitted draft.
+    if (!this._isOpen) return;
+    this._isOpen = false;
     const modal = this.renderRoot.querySelector('#modal') as HTMLElement & { open: boolean };
+    if (saveDraft && this.mode === 'add') this._saveDraft();
     if (modal) modal.open = false;
     this.dispatchEvent(new CustomEvent('modal-close', { bubbles: true, composed: true }));
   }
 
   private _onTemplateChange(e: Event) {
-    if (this._restoring) return;
     const id = (e.target as HTMLSelectElement).value;
     this._selectedTemplateId = id;
     if (!id) {
@@ -126,12 +132,12 @@ export class DataWizard extends LitElement {
     const tmpl = templateStore.getById(id);
     if (tmpl) {
       this._formData = {
-        name: this._formData.name || tmpl.name,
+        name: tmpl.name,
         description: tmpl.description,
-        url: this._formData.url || tmpl.url,
-        fields: tmpl.fields.map((f) => ({ id: f.id, name: f.name, selector: f.selector, value: '' })),
-        buttonName: this._formData.buttonName || tmpl.button?.name || '',
-        buttonSelector: this._formData.buttonSelector || tmpl.button?.selector || '',
+        url: tmpl.url,
+        fields: tmpl.fields.map((f) => ({ ...f, value: '' })),
+        buttonName: tmpl.button?.name || '',
+        buttonSelector: tmpl.button?.selector || '',
       };
       this.requestUpdate();
     }
@@ -139,6 +145,7 @@ export class DataWizard extends LitElement {
 
   private _onFormChange(e: CustomEvent) {
     this._formData = e.detail as FormConfigData;
+    this._invalidFieldIds = [];
     this.requestUpdate();
   }
 
@@ -153,6 +160,7 @@ export class DataWizard extends LitElement {
         name: field.name,
         selector: field.selector ?? '',
         value: field.value ?? '',
+        inputType: field.inputType,
       })),
       ...(d.buttonName ? { buttonName: d.buttonName } : {}),
       ...(d.buttonSelector ? { buttonSelector: d.buttonSelector } : {}),
@@ -163,6 +171,7 @@ export class DataWizard extends LitElement {
     this._inputMode = event.detail.mode;
     if (this._inputMode === 'json' && !this._jsonDirty) this._jsonText = this._serializeFormData();
     this._jsonError = '';
+    this._invalidFieldIds = [];
     this.requestUpdate();
   }
 
@@ -174,7 +183,7 @@ export class DataWizard extends LitElement {
   }
 
   private _saveDraft() {
-    _dataDraft = { ...this._formData, fields: [...this._formData.fields], templateId: this._selectedTemplateId };
+    _dataDraft = { ...this._formData, fields: this._formData.fields.map((field) => ({ ...field })) };
   }
 
   private _submit() {
@@ -185,7 +194,7 @@ export class DataWizard extends LitElement {
           detail, bubbles: true, composed: true,
         }));
         this._clearDraft();
-        this.close();
+        this._close(false);
       } catch {
         this._jsonError = this._i18n.t('config.jsonInvalid');
         this.requestUpdate();
@@ -194,8 +203,16 @@ export class DataWizard extends LitElement {
     }
     const d = this._formData;
     if (!d.name.trim()) return;
+    // A value without a selector can never be filled: block the save instead of storing dead data.
+    const invalid = d.fields.filter((f) => (f.value ?? '').trim() !== '' && (f.selector ?? '').trim() === '');
+    if (invalid.length > 0) {
+      this._invalidFieldIds = invalid.map((f) => f.id);
+      this.requestUpdate();
+      return;
+    }
+    this._invalidFieldIds = [];
     const values: DataFieldValue[] = d.fields
-      .map((f) => ({ name: f.name, selector: f.selector ?? '', value: (f.value ?? '').trim() }));
+      .map((f) => ({ name: f.name, selector: f.selector ?? '', value: (f.value ?? '').trim(), inputType: f.inputType }));
     this.dispatchEvent(new CustomEvent('data-submit', {
       detail: {
         name: d.name.trim(), description: d.description.trim(), url: d.url.trim(),
@@ -207,7 +224,7 @@ export class DataWizard extends LitElement {
       bubbles: true, composed: true,
     }));
     this._clearDraft();
-    this.close();
+    this._close(false);
   }
 
   private _clearDraft() {
@@ -240,8 +257,8 @@ export class DataWizard extends LitElement {
           <div class="form-group">
             <label>${this._i18n.t('data.selectTemplate')}</label>
             <select @change=${this._onTemplateChange}>
-              <option value="" ?selected=${!this._selectedTemplateId}>${this._i18n.t('data.manual')}</option>
-              ${templates.map((t) => html`<option value=${t.id} ?selected=${this._selectedTemplateId === t.id}>${t.name}</option>`)}
+              <option value="" .selected=${live(!this._selectedTemplateId)}>${this._i18n.t('data.manual')}</option>
+              ${templates.map((t) => html`<option value=${t.id} .selected=${live(this._selectedTemplateId === t.id)}>${t.name}</option>`)}
             </select>
           </div>
 
@@ -251,6 +268,7 @@ export class DataWizard extends LitElement {
             .description=${this._formData.description}
             .url=${this._formData.url}
             .fields=${this._formData.fields}
+            .invalidFieldIds=${this._invalidFieldIds}
             .buttonName=${this._formData.buttonName}
             .buttonSelector=${this._formData.buttonSelector}
             @form-change=${this._onFormChange}
@@ -267,6 +285,9 @@ export class DataWizard extends LitElement {
         `}
 
         <div slot="footer" style="margin-top:16px">
+          ${this._invalidFieldIds.length > 0
+            ? html`<span class="form-error">${this._i18n.t('data.selectorRequired')}</span>`
+            : ''}
           <button class="btn-cancel" @click=${this.close}>${this._i18n.t('config.cancel')}</button>
           <button class="btn-primary" @click=${this._submit} ?disabled=${this._inputMode === 'form' ? !this._formData.name.trim() : !this._jsonText.trim()}>${this._i18n.t('config.save')}</button>
         </div>

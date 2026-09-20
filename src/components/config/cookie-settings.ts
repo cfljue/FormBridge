@@ -126,6 +126,7 @@ export class CookieSettings extends LitElement {
             <li>${this._i18n.t('cookie.disclaimer2')}</li>
             <li>${this._i18n.t('cookie.disclaimer3')}</li>
             <li>${this._i18n.t('cookie.disclaimer4')}</li>
+            <li>${this._i18n.t('cookie.disclaimer5')}</li>
           </ul>
         </div>
       </div>

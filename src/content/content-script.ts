@@ -1,4 +1,4 @@
-import { type ExtensionMessage, type AutoFillResponse } from '@app-types/messages';
+import { type ExtensionMessage, type AutoFillResponse, type AutoFillPayload } from '@app-types/messages';
 
 function getAllStorage(storage: Storage): Record<string, string> {
   const result: Record<string, string> = {};
@@ -39,41 +39,7 @@ async function handleContentMessage(message: ExtensionMessage): Promise<unknown>
     }
 
     case 'AUTO_FILL_FORM': {
-      const p = message.payload;
-      const record = p.record;
-      const result: AutoFillResponse = { filled: 0, failed: 0, failedFields: [], selectorMissed: [], clicked: false };
-
-      for (const f of record.values) {
-        if (!f.value) continue;
-        let selectorHit = true;
-        let el = document.querySelector(f.selector) as HTMLElement | null;
-        if (!el) {
-          selectorHit = false;
-          el = findInputByFieldName(f.name);
-        }
-        if (el) {
-          setInputValue(el, f.value);
-          if (selectorHit) {
-            result.filled++;
-          } else {
-            result.selectorMissed.push(`${f.name} (${f.selector})`);
-          }
-        } else {
-          result.failed++;
-          result.failedFields.push(f.name);
-        }
-      }
-
-      // Click button if configured
-      if (record.buttonSelector) {
-        const btn = document.querySelector(record.buttonSelector) as HTMLElement;
-        if (btn) {
-          btn.click();
-          result.clicked = true;
-        }
-      }
-
-      return result;
+      return autoFillForm(message.payload.record);
     }
 
     default:
@@ -81,8 +47,81 @@ async function handleContentMessage(message: ExtensionMessage): Promise<unknown>
   }
 }
 
+function emptyAutoFillResult(failed = 0): AutoFillResponse {
+  return { filled: 0, failed, failedFields: [], selectorMissed: [], invalidSelectors: [], buttonInvalid: false, clicked: false };
+}
+
+/**
+ * Resolves a selector without ever throwing: an empty or syntactically invalid selector is
+ * reported as invalid so the caller can skip it instead of aborting the whole fill.
+ */
+function safeQuery(selector: string | undefined): { el: HTMLElement | null; invalid: boolean } {
+  const value = selector?.trim();
+  if (!value) return { el: null, invalid: true };
+  try {
+    return { el: document.querySelector(value) as HTMLElement | null, invalid: false };
+  } catch {
+    return { el: null, invalid: true };
+  }
+}
+
+function autoFillForm(record: AutoFillPayload['record']): AutoFillResponse {
+  const result = emptyAutoFillResult();
+
+  try {
+    for (const f of record.values) {
+      if (!f.value) continue;
+
+      const probe = safeQuery(f.selector);
+      if (probe.invalid) {
+        // Name-based fallback is skipped on purpose: with no usable selector it would write
+        // the value into whatever field happens to match the name first.
+        result.invalidSelectors.push(f.name || '(unnamed field)');
+        continue;
+      }
+
+      let selectorHit = true;
+      let el = probe.el;
+      if (!el) {
+        selectorHit = false;
+        el = findInputByFieldName(f.name);
+      }
+
+      if (el) {
+        setInputValue(el, f.value);
+        if (selectorHit) {
+          result.filled++;
+        } else {
+          result.selectorMissed.push(`${f.name} (${f.selector})`);
+        }
+      } else {
+        result.failed++;
+        result.failedFields.push(f.name);
+      }
+    }
+
+    if (record.buttonSelector) {
+      const button = safeQuery(record.buttonSelector);
+      if (button.invalid) {
+        result.buttonInvalid = true;
+      } else if (button.el) {
+        button.el.click();
+        result.clicked = true;
+      }
+    }
+  } catch {
+    // Never let DOM surprises turn into a null response: the popup would report it as a
+    // missing content script. Keep whatever was filled so far.
+    return result.failed > 0 ? result : emptyAutoFillResult(record.values.length);
+  }
+
+  return result;
+}
+
 function findInputByFieldName(name: string): HTMLElement | null {
-  const lower = name.toLowerCase();
+  const lower = name.trim().toLowerCase();
+  // An empty name would match every placeholder/label and fill the first field on the page.
+  if (!lower) return null;
   // Try by name attribute
   let el = document.querySelector(`input[name="${CSS.escape(name)}"], textarea[name="${CSS.escape(name)}"], select[name="${CSS.escape(name)}"]`);
   if (el) return el as HTMLElement;

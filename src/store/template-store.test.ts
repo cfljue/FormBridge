@@ -25,7 +25,7 @@ describe('TemplateStore', () => {
       });
       expect(t.id).toBeTruthy();
       expect(t.name).toBe('Test');
-      expect(t.order).toBeUndefined(); // templates have no order
+      expect('order' in t).toBe(false); // templates have no order
       expect(t.createdAt).toBeGreaterThan(0);
       expect(templateStore.state.length).toBe(1);
       expect(templateStore.state[0].id).toBe(t.id);

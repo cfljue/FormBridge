@@ -26,14 +26,18 @@ export interface AutoFillResponse {
   failed: number;
   failedFields: string[];
   selectorMissed: string[];
+  /** Fields whose selector is empty or syntactically invalid; they were skipped, not name-matched. */
+  invalidSelectors: string[];
+  /** True when the record's button selector is empty or invalid, so no click was attempted. */
+  buttonInvalid: boolean;
   clicked: boolean;
 }
 
-// Popup -> Background
-export interface GetActiveTabUrlResponse {
-  url: string;
-  domain: string;
-  tabId: number;
+/** Auto-fill result returned by the service worker to the popup. */
+export interface AutoFillResult extends AutoFillResponse {
+  total: number;
+  success: boolean;
+  message: string;
 }
 
 // Content Script -> Background -> Popup
@@ -68,5 +72,4 @@ export type ExtensionMessage =
   | { action: 'COPY_COOKIES'; payload?: CopyCookiesPayload }
   | { action: 'PASTE_COOKIES'; payload?: PasteCookiesPayload }
   | { action: 'CLEAR_COOKIES'; payload?: ClearCookiesPayload }
-  | { action: 'AUTO_FILL_FORM'; payload: AutoFillPayload }
-  | { action: 'GET_ACTIVE_TAB_INFO' };
+  | { action: 'AUTO_FILL_FORM'; payload: AutoFillPayload };

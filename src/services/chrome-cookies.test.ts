@@ -6,7 +6,7 @@ let cookiesMock: ReturnType<typeof mockChromeCookies>;
 // Must mock before import
 cookiesMock = mockChromeCookies();
 
-import { setCookiesBatch, removeAllCookies } from './chrome-cookies';
+import { setCookiesBatch, removeAllCookies, resolveWriteScope } from './chrome-cookies';
 
 function makeCookie(overrides: Partial<chrome.cookies.Cookie> = {}): chrome.cookies.Cookie {
   return {
@@ -29,7 +29,7 @@ describe('chrome-cookies service', () => {
     cookiesMock.set.mockClear();
     cookiesMock.remove.mockClear();
     cookiesMock.set.mockResolvedValue({} as chrome.cookies.Cookie);
-    cookiesMock.remove.mockResolvedValue({} as chrome.cookies.Details);
+    cookiesMock.remove.mockResolvedValue({} as chrome.cookies.CookieDetails);
     cookiesMock.getAll.mockResolvedValue([]);
   });
 
@@ -112,6 +112,85 @@ describe('chrome-cookies service', () => {
     });
   });
 
+  describe('cookie scope fidelity', () => {
+    function lastSetDetails(): chrome.cookies.SetDetails {
+      return cookiesMock.set.mock.calls[cookiesMock.set.mock.calls.length - 1][0] as chrome.cookies.SetDetails;
+    }
+
+    it('keeps a parent-domain scope when the target is one of its subdomains', async () => {
+      const cookies = [makeCookie({ name: 'sso', domain: '.example.com', hostOnly: false })];
+
+      const result = await setCookiesBatch(cookies, 'https://app.example.com/dashboard');
+
+      expect(lastSetDetails()).toMatchObject({ domain: '.example.com', url: 'https://app.example.com/', path: '/' });
+      expect(result.scopeLost).toBe(0);
+    });
+
+    it('writes host-only and counts a lost scope when the target is a different site', async () => {
+      const cookies = [makeCookie({ name: 'sso', domain: '.example.com', hostOnly: false })];
+
+      const result = await setCookiesBatch(cookies, 'http://localhost:3000/');
+
+      const details = lastSetDetails();
+      // Cookies are not port-specific, so the host alone is the write target.
+      expect(details.url).toBe('http://localhost/');
+      expect(details.domain).toBeUndefined();
+      expect(result.scopeLost).toBe(1);
+    });
+
+    it('never widens a host-only cookie into a domain cookie', async () => {
+      const cookies = [makeCookie({ name: 'sid', domain: 'app.example.com', hostOnly: true })];
+
+      const result = await setCookiesBatch(cookies, 'https://app.example.com/');
+
+      expect(lastSetDetails().domain).toBeUndefined();
+      expect(result.scopeLost).toBe(0);
+    });
+
+    it('skips partitioned cookies and reports them', async () => {
+      const cookies = [
+        makeCookie({ name: 'chips', partitionKey: { topLevelSite: 'https://example.com' } }),
+        makeCookie({ name: 'plain' }),
+      ];
+
+      const result = await setCookiesBatch(cookies, 'https://example.com/');
+
+      expect(result.partitionedSkipped).toBe(1);
+      expect(cookiesMock.set).toHaveBeenCalledTimes(1);
+      expect(result.success).toBe(1);
+    });
+
+    it('counts a single root copy when two source paths collapse into the same target', async () => {
+      const cookies = [
+        makeCookie({ name: 'token', path: '/app' }),
+        makeCookie({ name: 'token', path: '/other' }),
+      ];
+
+      const result = await setCookiesBatch(cookies, 'https://example.com/');
+
+      expect(cookiesMock.set).toHaveBeenCalledTimes(3);
+      expect(result.success).toBe(3);
+      expect(result.rootCopies).toBe(1);
+    });
+  });
+
+  describe('resolveWriteScope', () => {
+    it('matches a bare domain against its subdomains but not lookalike hosts', () => {
+      expect(resolveWriteScope({ domain: 'example.com', hostOnly: false }, 'app.example.com').domain).toBe('example.com');
+      expect(resolveWriteScope({ domain: 'example.com', hostOnly: false }, 'notexample.com').domain).toBeUndefined();
+      expect(resolveWriteScope({ domain: 'example.com', hostOnly: false }, 'example.com').domain).toBe('example.com');
+    });
+
+    it('flags partitioned cookies before anything else', () => {
+      const scope = resolveWriteScope(
+        { domain: '.example.com', hostOnly: false, partitionKey: { topLevelSite: 'https://example.com' } },
+        'app.example.com'
+      );
+
+      expect(scope).toEqual({ partitioned: true, scopeLost: false });
+    });
+  });
+
   describe('removeAllCookies', () => {
     it('removes all 3 cookies successfully', async () => {
       const cookies = [
@@ -135,7 +214,7 @@ describe('chrome-cookies service', () => {
       ];
       cookiesMock.getAll.mockResolvedValue(cookies);
       cookiesMock.remove
-        .mockResolvedValueOnce({} as chrome.cookies.Details)
+        .mockResolvedValueOnce({} as chrome.cookies.CookieDetails)
         .mockRejectedValueOnce(new Error('failed'));
 
       const result = await removeAllCookies('https://sub.example.com');

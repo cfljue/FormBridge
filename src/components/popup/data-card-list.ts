@@ -12,12 +12,7 @@ export class DataCardList extends LitElement {
   `;
 
   @property({ type: Array }) records: Array<{ id: string; name: string; url: string; matched: boolean }> = [];
-  @property({ type: Array }) order: string[] = [];
   @property({ type: Number }) columns = 3;
-
-  private get _sorted() {
-    return this.records;
-  }
 
   private _onDragOver(e: DragEvent) {
     e.preventDefault();
@@ -28,17 +23,16 @@ export class DataCardList extends LitElement {
     e.preventDefault();
     const fromIndex = Number(e.dataTransfer!.getData('text/plain'));
     if (isNaN(fromIndex) || fromIndex === toIndex) return;
-    const ids = this._sorted.map((r) => r.id);
+    const ids = this.records.map((r) => r.id);
     const [moved] = ids.splice(fromIndex, 1);
     ids.splice(toIndex, 0, moved);
     this.dispatchEvent(new CustomEvent('order-change', { detail: ids, bubbles: true, composed: true }));
   }
 
   render() {
-    const sorted = this._sorted;
     return html`
       <div class="grid" style="grid-template-columns:repeat(${this.columns},1fr)" @dragover=${this._onDragOver}>
-        ${sorted.map((r, i) => html`
+        ${this.records.map((r, i) => html`
           <div @drop=${(e: DragEvent) => this._onDrop(e, i)}>
             <data-card
               .record=${{ id: r.id, name: r.name, url: r.url }}

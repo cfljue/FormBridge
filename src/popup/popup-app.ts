@@ -1,10 +1,12 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
+import { type AutoFillResult } from '@app-types/messages';
 import { I18nController, getLocale } from '@i18n/index';
 import { StoreController } from '@store/store-controller';
 import { dataRecordStore } from '@store/data-record-store';
 import { settingsStore } from '@store/settings-store';
 import { urlMatches } from '@utils/url-matcher';
+import { mergeVisibleOrder } from '@utils/order';
 import { showToast } from '@shared/toast-notification';
 import '@popup/data-card-list';
 import '@shared/search-bar';
@@ -58,13 +60,18 @@ export class PopupApp extends LitElement {
 
   @state() private _currentUrl = '';
   @state() private _searchQuery = '';
+  @state() private _ready = false;
 
   private _activeTabId = 0;
 
   connectedCallback() {
     super.connectedCallback();
     this._records.load();
-    this._settings.load();
+    // Render only after the stored settings (language, width) are known, so the popup does not
+    // paint in the default language first and flip afterwards.
+    void this._settings.load().then(() => {
+      this._ready = true;
+    });
     this._fetchCurrentTab();
     window.addEventListener('keydown', this._onKeyDown);
   }
@@ -199,14 +206,18 @@ export class PopupApp extends LitElement {
     const full = dataRecordStore.getById(record.id);
     if (!full) return;
     try {
-      const resp = await chrome.runtime.sendMessage({
+      const resp = (await chrome.runtime.sendMessage({
         action: 'AUTO_FILL_FORM',
         payload: { tabId: tab.id, record: full },
-      });
-      const total = resp?.total ?? resp?.filled ?? 0;
+      })) as AutoFillResult | null;
+      const total = resp?.total ?? 0;
       const filled = resp?.filled ?? 0;
       const missed = total - filled;
-      const hasWarn = (resp?.failed > 0) || (resp?.selectorMissed?.length > 0);
+      const hasWarn =
+        (resp?.failed ?? 0) > 0 ||
+        (resp?.selectorMissed?.length ?? 0) > 0 ||
+        (resp?.invalidSelectors?.length ?? 0) > 0 ||
+        resp?.buttonInvalid === true;
       const type = resp?.success === false ? 'error' : hasWarn ? 'warning' : 'success';
       showToast(
         resp?.message ??
@@ -221,7 +232,11 @@ export class PopupApp extends LitElement {
   private _onCardNavigate(e: CustomEvent) { chrome.tabs.create({ url: e.detail }); }
 
   private async _onOrderChange(e: CustomEvent) {
-    await settingsStore.setDataCardOrder(e.detail);
+    // The dragged list only contains visible cards, so merge it into the full order instead of
+    // replacing it (which used to drop the order of records hidden by the search filter).
+    const visible = e.detail as string[];
+    const full = this._getCards().map((r) => r.id);
+    await settingsStore.setDataCardOrder(mergeVisibleOrder(full, visible));
   }
 
   private _openConfig() { chrome.runtime.openOptionsPage(); }
@@ -251,6 +266,12 @@ export class PopupApp extends LitElement {
   }
 
   render() {
+    if (!this._ready) {
+      // Placeholder keeps the configured default width so the popup does not resize once the
+      // stored settings arrive.
+      return html`<div class="root" style="--popup-width:600px"><div class="cards-area"></div></div>`;
+    }
+
     const cards = this._getCards();
     const pw = this._settings.state.popupWidth;
 
@@ -270,7 +291,6 @@ export class PopupApp extends LitElement {
           ? html`
               <data-card-list
                 .records=${cards.map((r) => ({ id: r.id, name: r.name, url: r.url, matched: urlMatches(this._currentUrl, r.url) }))}
-                .order=${this._settings.state.dataCardOrder}
                 .columns=${this._columns}
                 @card-fill=${this._onCardFill}
                 @card-navigate=${this._onCardNavigate}

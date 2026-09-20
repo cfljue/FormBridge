@@ -38,17 +38,10 @@ export function initLocale(locale: Locale): void {
   setLocale(locale);
 }
 
-// ── Self-initialize from storage (every context reads independently) ──
+// ── Cross-context sync ──
+// The stored language is applied by settingsStore.load(); this listener only reacts to changes
+// made in another context (popup <-> config page).
 if (typeof chrome !== 'undefined' && chrome.storage) {
-  // On module load: read stored language once
-  chrome.storage.local.get('settings').then((result) => {
-    const lang = (result.settings as Record<string, unknown> | undefined)?.language;
-    if (lang === 'en' || lang === 'zh') {
-      setLocale(lang);
-    }
-  });
-
-  // On any settings change from another context: sync language
   chrome.storage.onChanged.addListener((changes) => {
     if (changes.settings) {
       const lang = (changes.settings.newValue as Record<string, unknown> | undefined)?.language;

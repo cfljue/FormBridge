@@ -4,13 +4,29 @@ import { sendToTabWithInjectionRetry } from './chrome-tabs';
 
 const SNAPSHOT_KEY = 'cookieSnapshot';
 
+/** Snapshots hold live session tokens, so they expire instead of lingering forever. */
+export const SNAPSHOT_TTL_MS = 30 * 60 * 1000;
+
+export function isSnapshotExpired(snapshot: Pick<CookieSnapshot, 'timestamp'>, now = Date.now()): boolean {
+  if (typeof snapshot.timestamp !== 'number' || !Number.isFinite(snapshot.timestamp)) return true;
+  return now - snapshot.timestamp > SNAPSHOT_TTL_MS;
+}
+
 export async function saveSnapshot(snapshot: CookieSnapshot): Promise<void> {
   await chrome.storage.local.set({ [SNAPSHOT_KEY]: snapshot });
 }
 
 export async function getSnapshot(): Promise<CookieSnapshot | null> {
   const result = await chrome.storage.local.get(SNAPSHOT_KEY);
-  return (result[SNAPSHOT_KEY] as CookieSnapshot) ?? null;
+  const snapshot = (result[SNAPSHOT_KEY] as CookieSnapshot | undefined) ?? null;
+  if (!snapshot) return null;
+
+  if (isSnapshotExpired(snapshot)) {
+    await clearSnapshot();
+    return null;
+  }
+
+  return snapshot;
 }
 
 export async function clearSnapshot(): Promise<void> {

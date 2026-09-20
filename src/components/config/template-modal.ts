@@ -39,15 +39,17 @@ export class TemplateModal extends LitElement {
   private _jsonText = '';
   private _jsonError = '';
   private _jsonDirty = false;
+  private _isOpen = false;
 
   open(template?: Template) {
+    this._isOpen = true;
     if (template) {
       this.data = { ...template };
       this._formData = {
         name: template.name,
         description: template.description,
         url: template.url,
-        fields: template.fields.map((f) => ({ id: f.id, name: f.name, selector: f.selector, value: '' })),
+        fields: template.fields.map((f) => ({ ...f, value: '' })),
         buttonName: template.button?.name ?? '',
         buttonSelector: template.button?.selector ?? '',
       };
@@ -66,6 +68,9 @@ export class TemplateModal extends LitElement {
   }
 
   close() {
+    // A hidden dialog also receives Escape; do not recreate a draft that was already submitted.
+    if (!this._isOpen) return;
+    this._isOpen = false;
     if (this.mode === 'add') this._saveDraft();
     const modal = this.renderRoot.querySelector('#modal') as HTMLElement & { open: boolean };
     if (modal) modal.open = false;
@@ -83,7 +88,7 @@ export class TemplateModal extends LitElement {
       name: d.name,
       description: d.description,
       url: d.url,
-      fields: d.fields.map((field) => ({ name: field.name, selector: field.selector ?? '' })),
+      fields: d.fields.map((field) => ({ name: field.name, selector: field.selector ?? '', inputType: field.inputType })),
       ...(d.buttonSelector.trim() ? { button: { name: d.buttonName || 'Submit', selector: d.buttonSelector } } : {}),
     }], null, 2);
   }
@@ -121,7 +126,7 @@ export class TemplateModal extends LitElement {
     if (!d.name.trim()) return;
     const fields: TemplateField[] = d.fields
       .filter((f) => f.name.trim())
-      .map((f) => ({ id: f.id, name: f.name.trim(), selector: f.selector?.trim() ?? '' }));
+      .map((f) => ({ id: f.id, name: f.name.trim(), selector: f.selector?.trim() ?? '', inputType: f.inputType }));
     const button = d.buttonSelector.trim() ? { name: d.buttonName.trim() || 'Submit', selector: d.buttonSelector.trim() } : undefined;
     this.dispatchEvent(new CustomEvent('template-submit', {
       detail: { name: d.name.trim(), description: d.description.trim(), url: d.url.trim(), fields, button },

@@ -5,7 +5,9 @@ import { StoreController } from '@store/store-controller';
 import { templateStore } from '@store/template-store';
 import { dataRecordStore } from '@store/data-record-store';
 import { fuzzySearch } from '@utils/fuzzy-search';
-import { downloadJson, parseJsonArray } from '@utils/json-file';
+import { downloadJson } from '@utils/json-file';
+import { parseDataRecordArrayJson } from '@utils/direct-json-import';
+import { reportBatchImport, reportImportFailure } from '@utils/import-feedback';
 import { type DataRecord, type Template } from '@app-types/models';
 import { type ColumnDef, type RowAction, type RowActionDetail } from '@shared/data-table';
 import '@shared/search-bar';
@@ -86,8 +88,8 @@ export class DataManagement extends LitElement {
       case 'extract': {
         const tmpl = templateStore.getById(record.templateId);
         const fields = record.values.length > 0
-          ? record.values.map((v) => ({ id: v.name, name: v.name, selector: v.selector }))
-          : (tmpl?.fields ?? []).map((f) => ({ id: f.id, name: f.name, selector: f.selector }));
+          ? record.values.map((v) => ({ id: v.name, name: v.name, selector: v.selector, inputType: v.inputType }))
+          : (tmpl?.fields ?? []).map((f) => ({ ...f }));
         const t: Template = {
           id: '', name: record.name,
           description: record.description || tmpl?.description || '',
@@ -141,13 +143,11 @@ export class DataManagement extends LitElement {
 
   private async _onBatchImport(e: CustomEvent<{ content: string }>) {
     try {
-      const items = parseJsonArray<DataRecord>(e.detail.content);
-      const count = await dataRecordStore.importFrom(items);
-      const { showToast } = await import('@shared/toast-notification');
-      showToast(this._i18n.t('data.imported', { count }), 'success');
+      const parsed = parseDataRecordArrayJson(e.detail.content);
+      const count = await dataRecordStore.importFrom(parsed.items);
+      reportBatchImport('data', parsed, count);
     } catch {
-      const { showToast } = await import('@shared/toast-notification');
-      showToast(this._i18n.t('data.importFailed'), 'error');
+      reportImportFailure('data');
     }
   }
 

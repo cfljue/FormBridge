@@ -11,6 +11,11 @@ chrome.runtime.onInstalled.addListener(async () => {
   }
 });
 
+// A copied session must not survive a browser restart.
+chrome.runtime.onStartup.addListener(() => {
+  void clearSnapshot();
+});
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   handleMessage(message, sender).then(sendResponse).catch(() => sendResponse(null));
   return true; // async response
@@ -63,11 +68,14 @@ export async function handleMessage(
       }
       storageOk = storageOk || storageKeys === 0;
 
-      let msg = `Cleared ${clearResult.removed} cookies`;
-      if (clearResult.failed > 0) msg += ` (${clearResult.failed} failed)`;
-      msg += `. Pasted ${result.success}/${result.success + result.failed} cookies`;
-      if (storageKeys > 0) msg += storageOk ? ` + ${storageKeys} storage keys` : ` (storage failed)`;
-      if (result.errors.length > 0) msg += `. Failed: ${result.errors.join(', ')}`;
+      const parts = [`Cleared ${clearResult.removed} cookies`];
+      if (clearResult.failed > 0) parts.push(`${clearResult.failed} could not be cleared`);
+      parts.push(`Pasted ${result.success}/${result.success + result.failed} cookies`);
+      if (result.rootCopies > 0) parts.push(`${result.rootCopies} extra path=/ copies added`);
+      if (result.partitionedSkipped > 0) parts.push(`${result.partitionedSkipped} partitioned cookie(s) skipped`);
+      if (result.scopeLost > 0) parts.push(`${result.scopeLost} cookie(s) written host-only (parent-domain scope lost)`);
+      if (storageKeys > 0) parts.push(storageOk ? `${storageKeys} storage keys written` : 'storage failed');
+      if (result.errors.length > 0) parts.push(`Failed: ${result.errors.join(', ')}`);
 
       // Clear snapshot after paste — one-time use
       await clearSnapshot();
@@ -75,7 +83,15 @@ export async function handleMessage(
       // Reload target page
       await chrome.tabs.reload(tabId);
 
-      return { success: clearResult.failed === 0 && result.failed === 0 && (storageKeys === 0 || storageOk), total: result.success + result.failed, failed: result.failed, message: msg + '. Page reloading...' };
+      return {
+        success: clearResult.failed === 0 && result.failed === 0 && (storageKeys === 0 || storageOk),
+        total: result.success + result.failed,
+        failed: result.failed,
+        partitionedSkipped: result.partitionedSkipped,
+        scopeLost: result.scopeLost,
+        rootCopies: result.rootCopies,
+        message: parts.join('. ') + '. Page reloading...',
+      };
     }
 
     case 'CLEAR_COOKIES': {
@@ -96,8 +112,11 @@ export async function handleMessage(
 
     case 'AUTO_FILL_FORM': {
       const p = message.payload;
-      const tab = await chrome.tabs.get(p.tabId);
-      if (!tab.id) return { success: false, message: 'Tab not found' };
+      try {
+        await chrome.tabs.get(p.tabId);
+      } catch {
+        return { success: false, message: 'Tab not found' };
+      }
 
       const response = await sendToTabWithInjectionRetry<AutoFillResponse>(p.tabId, {
         action: 'AUTO_FILL_FORM',
@@ -105,23 +124,17 @@ export async function handleMessage(
       });
 
       if (!response) return { success: false, message: 'Content script not loaded. Please refresh the target page.' };
-      const total = response.filled + response.selectorMissed.length + response.failed;
-      let msg = `Filled ${response.filled}/${total} fields`;
-      if (response.selectorMissed.length) msg += `. Name-matched (bad selector): ${response.selectorMissed.join(', ')}`;
-      if (response.failedFields.length) msg += `. Missed: ${response.failedFields.join(', ')}`;
-      if (response.clicked) msg += '. Button clicked!';
-      return { ...response, message: msg };
-    }
 
-    case 'GET_ACTIVE_TAB_INFO': {
-      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-      if (!tab) return null;
-      try {
-        const url = new URL(tab.url ?? '');
-        return { url: tab.url, domain: url.hostname, tabId: tab.id };
-      } catch {
-        return { url: tab.url ?? '', domain: '', tabId: tab.id };
-      }
+      const total =
+        response.filled + response.failed + response.selectorMissed.length + response.invalidSelectors.length;
+      const parts = [`Filled ${response.filled}/${total} fields`];
+      if (response.selectorMissed.length) parts.push(`matched by field name instead: ${response.selectorMissed.join(', ')}`);
+      if (response.invalidSelectors.length) parts.push(`invalid selectors, skipped: ${response.invalidSelectors.join(', ')}`);
+      if (response.failedFields.length) parts.push(`no match: ${response.failedFields.join(', ')}`);
+      if (response.buttonInvalid) parts.push('button selector is invalid, not clicked');
+      if (response.clicked) parts.push('button clicked');
+
+      return { ...response, total, success: true, message: parts.join('. ') };
     }
 
     default:

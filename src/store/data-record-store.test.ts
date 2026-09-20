@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { createStorageMock } from '../__tests__/chrome-mock';
 import type { DataRecord } from '../types/models';
 
@@ -143,6 +143,39 @@ describe('DataRecordStore', () => {
       const loaded = dataRecordStore.getById('modern-1');
       expect(loaded?.values).toEqual([{ name: 'f1', selector: '#f1', value: 'v1' }]);
     });
+
+    it('keeps usable records when one entry has no values array', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      storageMock.get.mockResolvedValueOnce({
+        dataRecords: [
+          { id: 'broken-1', name: 'Broken', values: undefined, order: 0, createdAt: 1, updatedAt: 1 },
+          { id: 'ok-1', name: 'Ok', values: [{ name: 'user', selector: '#user', value: 'alice' }], order: 1, createdAt: 1, updatedAt: 1 },
+        ],
+      });
+
+      await expect(dataRecordStore.load()).resolves.toBeUndefined();
+
+      // The unusable field list is repaired to [] rather than dropping the record.
+      expect(dataRecordStore.state.map((r) => r.id)).toEqual(['broken-1', 'ok-1']);
+      expect(dataRecordStore.getById('broken-1')?.values).toEqual([]);
+      expect(dataRecordStore.getById('ok-1')?.values).toEqual([{ name: 'user', selector: '#user', value: 'alice' }]);
+      expect(warn).not.toHaveBeenCalled();
+      warn.mockRestore();
+    });
+
+    it('drops entries that cannot be used at all without failing the load', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      storageMock.get.mockResolvedValueOnce({
+        dataRecords: [null, 'not-an-object', { id: 'no-name', values: [] }],
+      });
+
+      await dataRecordStore.load();
+
+      expect(dataRecordStore.state).toEqual([]);
+      warn.mockRestore();
+    });
   });
 
   describe('importFrom', () => {
@@ -159,6 +192,23 @@ describe('DataRecordStore', () => {
       ]);
       expect(count).toBe(1);
       expect(dataRecordStore.state[0].name).toBe('Imported');
+    });
+
+    it('assigns ids to imported records that have none', async () => {
+      const count = await dataRecordStore.importFrom([
+        { name: 'No id', values: [{ name: 'user', selector: '#user', value: 'alice' }] },
+      ]);
+
+      expect(count).toBe(1);
+      expect(dataRecordStore.state[0].id).toBeTruthy();
+      expect(dataRecordStore.state[0].values[0].value).toBe('alice');
+    });
+
+    it('drops unusable imported entries instead of storing them', async () => {
+      const count = await dataRecordStore.importFrom([{ name: '' }, 42, null]);
+
+      expect(count).toBe(0);
+      expect(dataRecordStore.state).toEqual([]);
     });
   });
 });

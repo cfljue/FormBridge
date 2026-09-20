@@ -38,11 +38,23 @@ export class ConfigApp extends LitElement {
 
   private _i18n = new I18nController(this);
   @state() private _tab = 'data';
+  @state() private _ready = false;
+
+  connectedCallback() {
+    super.connectedCallback();
+    // The stored language is applied by load(); render afterwards so the page does not paint in
+    // the default language first.
+    void settingsStore.load().then(() => {
+      this._ready = true;
+    });
+  }
 
   private _onTabChange(e: CustomEvent) { this._tab = e.detail; }
   private _toggleLang() { settingsStore.setLanguage(getLocale() === 'en' ? 'zh' : 'en'); }
 
   render() {
+    if (!this._ready) return html``;
+
     return html`
       <div class="main">
         <div class="content-card">

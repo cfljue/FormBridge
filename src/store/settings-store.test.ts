@@ -8,6 +8,7 @@ const storageMock = createStorageMock();
 };
 
 import { settingsStore } from './settings-store';
+import { getLocale } from '@i18n/index';
 
 describe('SettingsStore', () => {
   beforeEach(async () => {
@@ -61,5 +62,21 @@ describe('SettingsStore', () => {
     // Defaults are preserved for missing keys
     expect(settingsStore.language).toBe('en');
     expect(settingsStore.dataCardOrder).toEqual([]);
+  });
+
+  it('load applies the stored language to the i18n locale', async () => {
+    storageMock.get.mockResolvedValueOnce({
+      settings: { cookieCopyEnabled: false, dataCardOrder: [], language: 'zh', popupWidth: 600 },
+    });
+
+    await settingsStore.load();
+
+    expect(getLocale()).toBe('zh');
+
+    storageMock.get.mockResolvedValueOnce({
+      settings: { cookieCopyEnabled: false, dataCardOrder: [], language: 'en', popupWidth: 600 },
+    });
+    await settingsStore.load();
+    expect(getLocale()).toBe('en');
   });
 });

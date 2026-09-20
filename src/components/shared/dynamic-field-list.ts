@@ -1,12 +1,16 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { generateId } from '@utils/id-generator';
+import type { FieldInputType } from '@app-types/models';
+import { I18nController } from '@i18n/index';
+import { live } from 'lit/directives/live.js';
 
 export interface FieldRow {
   id: string;
   name: string;
   selector?: string;
   value?: string;
+  inputType?: FieldInputType;
 }
 
 @customElement('dynamic-field-list')
@@ -16,13 +20,16 @@ export class DynamicFieldList extends LitElement {
     .field-list { display: flex; flex-direction: column; gap: 8px; }
     .field-row { display: flex; gap: 8px; align-items: center; }
     .field-row input {
-      flex: 1; padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px;
+      flex: 1; min-width: 0; padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px;
       font-size: 13px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       outline: none; box-sizing: border-box; color: #1e293b; background: #fff;
       transition: border-color 0.15s, box-shadow 0.15s;
     }
     .field-row input:focus { border-color: #93c5fd; box-shadow: 0 0 0 3px rgba(147,197,253,0.2); }
     .field-row input.readonly { background: #f8fafc; color: #64748b; cursor: default; }
+    .field-row.invalid input { border-color: #fca5a5; background: #fff7f7; }
+    select { width: 86px; flex-shrink: 0; padding: 8px 4px; border: 1px solid #e2e8f0; border-radius: 6px; background: #fff; color: #475569; }
+    select:focus { outline: 2px solid #93c5fd; }
     .actions { display: flex; gap: 2px; flex-shrink: 0; }
     .row-btn {
       background: none; border: none; cursor: pointer; padding: 5px 7px; border-radius: 4px;
@@ -41,9 +48,12 @@ export class DynamicFieldList extends LitElement {
   `;
 
   @property({ type: Array }) fields: FieldRow[] = [];
+  /** Row ids to flag as invalid, e.g. a value without a selector. */
+  @property({ type: Array }) invalidIds: string[] = [];
   @property({ type: String }) mode: 'definition' | 'value' = 'definition';
   @property({ type: Boolean }) readonly = false;
   @property({ type: Boolean }) showDrag = false;
+  private _i18n = new I18nController(this);
 
   private _notify() {
     this.dispatchEvent(new CustomEvent('fields-change', { detail: [...this.fields], bubbles: true, composed: true }));
@@ -51,6 +61,12 @@ export class DynamicFieldList extends LitElement {
 
   private _updateField(id: string, key: 'name' | 'selector' | 'value', val: string) {
     this.fields = this.fields.map((f) => (f.id === id ? { ...f, [key]: val } : f));
+    this._notify();
+  }
+
+  private _updateInputType(id: string, event: Event) {
+    const inputType: FieldInputType = (event.target as HTMLSelectElement).value === 'password' ? 'password' : 'text';
+    this.fields = this.fields.map((field) => field.id === id ? { ...field, inputType } : field);
     this._notify();
   }
 
@@ -98,27 +114,31 @@ export class DynamicFieldList extends LitElement {
     return html`
       <div class="field-list">
         ${this.fields.map((f, i) => html`
-          <div class="field-row">
+          <div class="field-row ${this.invalidIds.includes(f.id) ? 'invalid' : ''}">
             ${this.showDrag
               ? html`<span class="drag-handle" draggable="true" @dragstart=${(e: DragEvent) => this._onDragStart(e, i)} @dragover=${this._onDragOver} @drop=${(e: DragEvent) => this._onDrop(e, i)}>&#x2630;</span>`
               : ''}
             ${isDef ? html`
-              <input placeholder="Field name" .value=${f.name} @input=${(e: Event) => this._updateField(f.id, 'name', (e.target as HTMLInputElement).value)} ?readonly=${this.readonly} />
-              <input placeholder="CSS selector" .value=${f.selector ?? ''} @input=${(e: Event) => this._updateField(f.id, 'selector', (e.target as HTMLInputElement).value)} ?readonly=${this.readonly} />
+              <input placeholder=${this._i18n.t('template.fieldName')} .value=${f.name} @input=${(e: Event) => this._updateField(f.id, 'name', (e.target as HTMLInputElement).value)} ?readonly=${this.readonly} />
+              <input placeholder=${this._i18n.t('template.fieldSelector')} .value=${f.selector ?? ''} @input=${(e: Event) => this._updateField(f.id, 'selector', (e.target as HTMLInputElement).value)} ?readonly=${this.readonly} />
             ` : ''}
             ${isValue ? html`
-              <input placeholder="Field name" .value=${f.name} @input=${(e: Event) => this._updateField(f.id, 'name', (e.target as HTMLInputElement).value)} ?readonly=${this.readonly} />
-              <input placeholder="CSS selector" .value=${f.selector ?? ''} @input=${(e: Event) => this._updateField(f.id, 'selector', (e.target as HTMLInputElement).value)} ?readonly=${this.readonly} />
-              <input placeholder="Value" .value=${f.value ?? ''} @input=${(e: Event) => this._updateField(f.id, 'value', (e.target as HTMLInputElement).value)} ?readonly=${this.readonly} />
+              <input placeholder=${this._i18n.t('template.fieldName')} .value=${f.name} @input=${(e: Event) => this._updateField(f.id, 'name', (e.target as HTMLInputElement).value)} ?readonly=${this.readonly} />
+              <input placeholder=${this._i18n.t('template.fieldSelector')} .value=${f.selector ?? ''} @input=${(e: Event) => this._updateField(f.id, 'selector', (e.target as HTMLInputElement).value)} ?readonly=${this.readonly} />
+              <input placeholder=${this._i18n.t('template.fieldValue')} type=${f.inputType === 'password' ? 'password' : 'text'} autocomplete="off" .value=${f.value ?? ''} @input=${(e: Event) => this._updateField(f.id, 'value', (e.target as HTMLInputElement).value)} ?readonly=${this.readonly} />
             ` : ''}
+            <select aria-label=${this._i18n.t('field.inputType')} title=${this._i18n.t('field.inputType')} @change=${(e: Event) => this._updateInputType(f.id, e)} ?disabled=${this.readonly}>
+              <option value="text" .selected=${live(f.inputType !== 'password')}>${this._i18n.t('field.text')}</option>
+              <option value="password" .selected=${live(f.inputType === 'password')}>${this._i18n.t('field.password')}</option>
+            </select>
             <div class="actions">
-              <button class="row-btn" @click=${() => this.copyRow(f.id)} title="Copy">&#x1F4CB;</button>
-              <button class="row-btn danger" @click=${() => this.deleteRow(f.id)} title="Delete">&times;</button>
+              <button class="row-btn" @click=${() => this.copyRow(f.id)} title=${this._i18n.t('config.copy')}>&#x1F4CB;</button>
+              <button class="row-btn danger" @click=${() => this.deleteRow(f.id)} title=${this._i18n.t('config.delete')}>&times;</button>
             </div>
           </div>
         `)}
       </div>
-      <button class="add-btn" @click=${() => this.addRow()} ?disabled=${this.readonly}>+ Add field</button>
+      <button class="add-btn" @click=${() => this.addRow()} ?disabled=${this.readonly}>${this._i18n.t('template.addField')}</button>
     `;
   }
 }

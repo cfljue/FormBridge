@@ -4,7 +4,9 @@ import { I18nController } from '@i18n/index';
 import { StoreController } from '@store/store-controller';
 import { templateStore } from '@store/template-store';
 import { fuzzySearch } from '@utils/fuzzy-search';
-import { downloadJson, parseJsonArray } from '@utils/json-file';
+import { downloadJson } from '@utils/json-file';
+import { parseTemplateArrayJson } from '@utils/direct-json-import';
+import { reportBatchImport, reportImportFailure } from '@utils/import-feedback';
 import { type Template } from '@app-types/models';
 import { type ColumnDef, type RowAction, type RowActionDetail } from '@shared/data-table';
 import '@shared/search-bar';
@@ -108,13 +110,11 @@ export class TemplateManagement extends LitElement {
 
   private async _onBatchImport(e: CustomEvent<{ content: string }>) {
     try {
-      const items = parseJsonArray<Template>(e.detail.content);
-      const count = await templateStore.importFrom(items);
-      const { showToast } = await import('@shared/toast-notification');
-      showToast(this._i18n.t('template.imported', { count }), 'success');
+      const parsed = parseTemplateArrayJson(e.detail.content);
+      const count = await templateStore.importFrom(parsed.items);
+      reportBatchImport('template', parsed, count);
     } catch {
-      const { showToast } = await import('@shared/toast-notification');
-      showToast(this._i18n.t('template.importFailed'), 'error');
+      reportImportFailure('template');
     }
   }
 

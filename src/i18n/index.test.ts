@@ -71,7 +71,6 @@ describe('i18n', () => {
 
   describe('subscribeLocale', () => {
     it('notifies subscribers when locale changes', () => {
-      const fn = vi.fn(); // need import — but can use plain function
       let called = false;
       const unsub = subscribeLocale(() => { called = true; });
       setLocale('zh');

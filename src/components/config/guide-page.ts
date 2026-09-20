@@ -89,12 +89,19 @@ const content: Record<Locale, Content> = {
               <li><strong>快捷键参考</strong> — 列出三个快捷键及作用。</li>
               <li><strong>免责声明</strong> — 说明复制范围（包括 HttpOnly Cookie 和所有父级域名）、风险（会话冲突）、适用场景（仅供开发/测试）。</li>
             </ul>
-            <p>粘贴 Cookie 时，path 非 <code>/</code> 的 Cookie 会自动额外创建 <code>path=/</code> 的副本，确保在目标域名所有路径下正确发送。</p>
+            <p>粘贴时的实际行为（有意保留的近似）：</p>
+            <ul>
+              <li><strong>同父域子域之间保留域作用域</strong> — 来源是父域 Cookie（如 <code>.example.com</code>）且目标仍是该父域的子域时，按原域写入，同父域下的登录态可继续共享。</li>
+              <li><strong>跨站粘贴会收紧作用域</strong> — 目标换成完全不同的站点（如 <code>example.com</code> → <code>localhost</code>）时只能写成目标主机的 host-only Cookie，父域作用域无法保留，提示里会告知有多少条如此处理。</li>
+              <li><strong>额外写入 <code>path=/</code> 副本</strong> — 源 Cookie 的 path 不是 <code>/</code> 时会再写一份 <code>path=/</code> 副本，让它在目标站所有路径下都能发送；这是为跨站调试做的近似，会在提示里单独计数。</li>
+              <li><strong>分区 Cookie（CHIPS）不复制</strong> — 带分区键的 Cookie 会被跳过并计入提示。</li>
+            </ul>
+            <p>Cookie 快照保存在扩展本地存储中：<strong>粘贴一次后立即清除，30 分钟未使用或浏览器重启后也会自动失效</strong>。</p>
           `},
           { id: 'config-batch', title: '批量操作', body: html`
             <p>在数据或模板管理页面勾选表格行复选框进入批量模式，工具栏显示已选数量并提供三个按钮：</p>
             <ul>
-              <li><strong>导入</strong> — 选择 .json 文件批量导入，重复 ID 自动跳过。</li>
+              <li><strong>导入</strong> — 选择 .json 文件批量导入，重复 ID 自动跳过；格式不合法的条目会被跳过并在提示里说明原因，合法条目照常导入。</li>
               <li><strong>导出</strong> — 选中项导出为 <code>data-records-YYYY-MM-DD.json</code> 或 <code>templates-YYYY-MM-DD.json</code>。</li>
               <li><strong>批量删除</strong> — 确认后一次性删除所有选中项，不可撤销。</li>
             </ul>
@@ -113,6 +120,7 @@ const content: Record<Locale, Content> = {
         <li><strong>拖拽排序持久化。</strong>卡片顺序自动保存，下次打开保持一致。</li>
         <li><strong>误关弹窗不丢内容。</strong>新建数据/模板时关闭弹窗，重新打开自动恢复草稿。</li>
         <li><strong>选择器失效有回退。</strong>CSS 选择器未命中时扩展会按字段名自动回退匹配。</li>
+        <li><strong>选择器留空或写错会被跳过。</strong>这类字段不做字段名回退（避免把值写进无关输入框），其余字段照常填充，填充结果以黄色提示列出被跳过的字段；数据记录里"填了值却没填选择器"的行在保存时会被拦下。</li>
       </ul>
     `},
   },
@@ -199,12 +207,19 @@ const content: Record<Locale, Content> = {
               <li><strong>Shortcut reference</strong> — Lists the three shortcuts and their functions.</li>
               <li><strong>Disclaimer</strong> — Documents the copy scope (including HttpOnly cookies and all parent domains), risks, and intended use (development/testing only).</li>
             </ul>
-            <p>When pasting, cookies with a non-<code>/</code> path get an additional copy with <code>path=/</code> for correct delivery across all paths.</p>
+            <p>What pasting actually does (deliberate approximations included):</p>
+            <ul>
+              <li><strong>Keeps the domain scope between sibling subdomains</strong> — when the source is a parent-domain cookie (e.g. <code>.example.com</code>) and the target is still a subdomain of it, the original domain is kept so the login state keeps working across that parent domain.</li>
+              <li><strong>Cross-site paste narrows the scope</strong> — when the target is a different site (e.g. <code>example.com</code> → <code>localhost</code>), the cookie can only be written host-only for the target host; the parent-domain scope cannot be carried over, and the toast tells you how many cookies were affected.</li>
+              <li><strong>An extra <code>path=/</code> copy</strong> — when a source cookie's path is not <code>/</code>, another copy at <code>path=/</code> is written so it is sent on every path of the target site. This is an intentional approximation for cross-site debugging and is counted separately in the toast.</li>
+              <li><strong>Partitioned (CHIPS) cookies are not copied</strong> — cookies with a partition key are skipped and counted in the toast.</li>
+            </ul>
+            <p>Snapshots live in extension local storage: <strong>they are cleared right after a paste, and expire after 30 minutes of not being used or when the browser restarts</strong>.</p>
           `},
           { id: 'config-batch', title: 'Batch Operations', body: html`
             <p>Check table row boxes to enter batch mode. The toolbar shows the selected count and three buttons:</p>
             <ul>
-              <li><strong>Import</strong> — Select a .json file to batch import. Duplicate IDs skipped.</li>
+              <li><strong>Import</strong> — Select a .json file to batch import. Duplicate IDs are skipped, and invalid entries are skipped with the reason reported while the valid ones still import.</li>
               <li><strong>Export</strong> — Download selected items as <code>data-records-YYYY-MM-DD.json</code> or <code>templates-YYYY-MM-DD.json</code>.</li>
               <li><strong>Batch delete</strong> — Confirm then delete all selected items. Cannot be undone.</li>
             </ul>
@@ -223,6 +238,7 @@ const content: Record<Locale, Content> = {
         <li><strong>Card order is persistent.</strong> Drag-and-drop order is saved and restored across sessions.</li>
         <li><strong>Drafts survive accidental close.</strong> Re-opening the modal restores unsaved content.</li>
         <li><strong>Selector fallback.</strong> If the CSS selector doesn't match, the extension tries field-name-based fallback.</li>
+        <li><strong>Empty or malformed selectors are skipped.</strong> Such fields are not name-matched (that could write the value into an unrelated input); the remaining fields still fill, and the skipped ones are listed in a yellow warning. Data rows that have a value but no selector are rejected on save.</li>
       </ul>
     `},
   },

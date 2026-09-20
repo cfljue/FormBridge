@@ -25,7 +25,7 @@ export class StoreController<T> implements ReactiveController {
       this._host.requestUpdate();
     });
     if (this._autoLoad) {
-      this._store.load();
+      void this.load();
     }
   }
 
@@ -34,6 +34,12 @@ export class StoreController<T> implements ReactiveController {
   }
 
   async load(): Promise<void> {
-    await this._store.load();
+    try {
+      await this._store.load();
+    } catch (error) {
+      // A failing load must not leave an unhandled rejection behind: the host renders with
+      // whatever state the store already has instead of staying blank.
+      console.error('[FormBridge] Failed to load store state.', error);
+    }
   }
 }

@@ -49,8 +49,8 @@ export function createStorageMock(initialData: Record<string, unknown> = {}): Ch
     }),
   };
 
-  const storageMock = { get, set, remove, onChanged } as unknown as ChromeStorageMock;
-  (storageMock as Record<string, unknown>).local = storageMock;
+  const storageMock: ChromeStorageMock = { get, set, remove, onChanged } as ChromeStorageMock;
+  storageMock.local = storageMock;
   return storageMock;
 }
 
@@ -64,9 +64,9 @@ export function mockChromeStorage(initialData?: Record<string, unknown>) {
 }
 
 export function mockChromeCookies() {
-  const getAll = vi.fn(async (_details: chrome.cookies.GetAllDetails) => [] as chrome.cookies.Cookie[]);
-  const set = vi.fn(async (_details: chrome.cookies.SetDetails) => ({} as chrome.cookies.Cookie));
-  const remove = vi.fn(async (_details: chrome.cookies.Details) => ({} as chrome.cookies.Details));
+  const getAll = vi.fn(async (_details: chrome.cookies.GetAllDetails): Promise<chrome.cookies.Cookie[]> => []);
+  const set = vi.fn(async (_details: chrome.cookies.SetDetails): Promise<chrome.cookies.Cookie | null> => ({} as chrome.cookies.Cookie));
+  const remove = vi.fn(async (_details: chrome.cookies.CookieDetails): Promise<chrome.cookies.CookieDetails> => ({} as chrome.cookies.CookieDetails));
 
   (globalThis as Record<string, unknown>).chrome = {
     ...((globalThis as Record<string, unknown>).chrome as Record<string, unknown> ?? {}),
@@ -78,7 +78,7 @@ export function mockChromeCookies() {
 export function mockChromeTabs() {
   const query = vi.fn(async (_info: chrome.tabs.QueryInfo) => [] as chrome.tabs.Tab[]);
   const get = vi.fn(async (_tabId: number) => ({} as chrome.tabs.Tab));
-  const sendMessage = vi.fn(async (_tabId: number, _message: unknown) => null);
+  const sendMessage = vi.fn(async (_tabId: number, _message: unknown): Promise<unknown> => null);
   const create = vi.fn(async (_createProperties: chrome.tabs.CreateProperties) => ({} as chrome.tabs.Tab));
   const reload = vi.fn(async (_tabId?: number) => undefined);
 
@@ -90,7 +90,7 @@ export function mockChromeTabs() {
 }
 
 export function mockChromeRuntime() {
-  const sendMessage = vi.fn(async (_message: unknown) => null);
+  const sendMessage = vi.fn(async (_message: unknown): Promise<unknown> => null);
   const messageListeners: Array<(message: unknown, sender: chrome.runtime.MessageSender, sendResponse: (response?: unknown) => void) => boolean | void> = [];
 
   const onMessage = {
@@ -108,6 +108,22 @@ export function mockChromeRuntime() {
     runtime: { sendMessage, onMessage },
   };
   return { sendMessage, onMessage, messageListeners };
+}
+
+export type ChromeMessageListener = (
+  message: unknown,
+  sender: chrome.runtime.MessageSender,
+  sendResponse: (response?: unknown) => void
+) => boolean | void;
+
+/**
+ * Invokes a listener captured by `mockChromeRuntime().messageListeners` and resolves with the
+ * value passed to `sendResponse`. Listeners that never respond keep the promise pending.
+ */
+export function dispatchMessage(listener: ChromeMessageListener, message: unknown): Promise<unknown> {
+  return new Promise((resolve) => {
+    listener(message, {} as chrome.runtime.MessageSender, resolve);
+  });
 }
 
 export function clearChromeMock() {

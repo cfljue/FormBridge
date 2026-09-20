@@ -5,7 +5,7 @@ let tabsMock: ReturnType<typeof mockChromeTabs>;
 
 tabsMock = mockChromeTabs();
 
-import { getActiveTab, sendToTab, sendToTabWithInjectionRetry } from './chrome-tabs';
+import { sendToTab, sendToTabWithInjectionRetry } from './chrome-tabs';
 
 describe('chrome-tabs service', () => {
   beforeEach(() => {
@@ -17,23 +17,6 @@ describe('chrome-tabs service', () => {
     (chrome as unknown as Record<string, unknown>).scripting = {
       executeScript: vi.fn().mockResolvedValue([]),
     };
-  });
-
-  describe('getActiveTab', () => {
-    it('returns the active tab', async () => {
-      const fakeTab = { id: 42, url: 'https://example.com' } as chrome.tabs.Tab;
-      tabsMock.query.mockResolvedValueOnce([fakeTab]);
-
-      const tab = await getActiveTab();
-      expect(tab?.id).toBe(42);
-      expect(tab?.url).toBe('https://example.com');
-    });
-
-    it('returns null when no active tab', async () => {
-      tabsMock.query.mockResolvedValueOnce([]);
-      const tab = await getActiveTab();
-      expect(tab).toBeNull();
-    });
   });
 
   describe('sendToTab', () => {

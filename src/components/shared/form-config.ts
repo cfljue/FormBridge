@@ -51,6 +51,8 @@ export class FormConfig extends LitElement {
   @property({ type: String }) description = '';
   @property({ type: String }) url = '';
   @property({ type: Array }) fields: FieldRow[] = [];
+  /** Field ids to flag as invalid, forwarded to the list for row highlighting. */
+  @property({ type: Array }) invalidFieldIds: string[] = [];
   @property({ type: String }) buttonName = '';
   @property({ type: String }) buttonSelector = '';
 
@@ -105,6 +107,7 @@ export class FormConfig extends LitElement {
         <dynamic-field-list
           mode=${this.mode}
           .fields=${this.fields}
+          .invalidIds=${this.invalidFieldIds}
           @fields-change=${this._onFieldsChange}
         ></dynamic-field-list>
 

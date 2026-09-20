@@ -21,6 +21,9 @@ export class SettingsStore extends BaseStore<AppSettings> {
     if (result[STORAGE_KEY]) {
       this.replaceState({ ...DEFAULTS, ...result[STORAGE_KEY] });
     }
+    // The store is the single source of truth for the language; i18n only listens for
+    // changes made by another context.
+    initLocale(this._state.language);
   }
 
   async persist(): Promise<void> {
