@@ -10,11 +10,14 @@ npm run dev            # Vite 开发服务器（不做扩展测试用）
 npm test               # 运行全部单元测试（vitest）
 npm run test:watch     # 测试监听模式
 npm run test:coverage  # 测试覆盖率报告
+npm run typecheck      # 仅生产代码类型检查
+npm run typecheck:tests # 测试代码类型检查（tsconfig.test.json）
+npm run check          # typecheck + typecheck:tests + test + build（CI 用这条）
 npm install            # 安装依赖
-npx tsc --noEmit       # 仅 TypeScript 类型检查
+npx tsc --noEmit       # 等价于 npm run typecheck
 ```
 
-构建后加载扩展：Chrome → `chrome://extensions` → 开发者模式 → 加载已解压的扩展程序 → 选择 `dist/` 目录。`docs/TEST_PLAN.md` 含完整手动测试清单。
+构建后加载扩展：Chrome → `chrome://extensions` → 开发者模式 → 加载已解压的扩展程序 → 选择 `dist/` 目录。`dist/` **不进版本控制**（每次构建产物带 hash，release workflow 会自行构建打包），`docs/TEST_PLAN.md` 含完整手动测试清单。
 
 ## 架构概览
 
@@ -35,7 +38,15 @@ npx tsc --noEmit       # 仅 TypeScript 类型检查
 2. **`StoreController`** — Lit `ReactiveController` 桥接。`new StoreController(this, someStore)` 自动订阅，变化触发 `requestUpdate()`。
 3. **`chrome.storage.local`** — 持久化。数据在三个 key 下：`settings`、`templates`、`dataRecords`。
 
-模块级单例（`settingsStore`、`templateStore`、`dataRecordStore`），弹窗和配置页通过 `chrome.storage.onChanged` 跨上下文同步。
+模块级单例（`settingsStore`、`templateStore`、`dataRecordStore`）。**每个上下文在打开时各自从 storage 加载一次**：弹窗每次打开都是新上下文所以总是读到最新数据；配置页是长驻标签页，不会自动感知另一个配置页标签的写入（整表覆盖，last-write-wins）。唯一挂监听的是 i18n 语言同步（`chrome.storage.onChanged` → `setLocale`）。语言的真源是 `settingsStore.load()`，i18n 只响应跨上下文变更。
+
+### 数据边界（校验与归一化）
+
+- **写入边界**：单条 JSON 走 `direct-json-import.ts` 的 `parseTemplateJson` / `parseDataRecordJson`；批量导入走 `parseTemplateArrayJson` / `parseDataRecordArrayJson`，逐条校验并返回 `{ items, skipped }`，坏条目被跳过而不是让整次导入失败。值非空却没有 selector 的记录会被拒绝（保存时弹窗拦截并高亮，JSON 导入时抛错）。
+- **读取边界**：两个 store 的 `load()` 用 `normalizeTemplate` / `normalizeDataRecord` 逐条归一化，坏条目丢弃并 `console.warn`，永远不会因为一条脏数据把整个列表变成空。
+- `importFrom` 接收不可信输入：缺 id/时间戳会补上，重复 id 跳过。
+- 文案反馈统一走 `utils/import-feedback.ts`（导入成功/部分跳过/失败三种 toast）。
+- **卡片顺序**：`settings.dataCardOrder` 存全量 id 顺序。拖拽只看到当前可见（可能被搜索过滤）的卡片，因此必须用 `utils/order.ts` 的 `mergeVisibleOrder` 把可见子集的新顺序合并回全量，否则隐藏记录的自定义顺序会被覆盖。
 
 ### 数据模型
 
@@ -48,9 +59,10 @@ npx tsc --noEmit       # 仅 TypeScript 类型检查
 
 - **只在弹窗内操作**，不再拦截页面 Ctrl+C/V/D。受 Cookie 开关控制（`settings.cookieCopyEnabled`）。
 - **复制**（弹窗 Ctrl+C）：Service Worker 逐级查询域名层级（`a.b.example.com` → `b.example.com` → `example.com`）的 `chrome.cookies.getAll({ domain })`，合并去重后得到该域名下所有 Cookie（含不同 path、不同子域、HttpOnly、Secure）+ 发 `GET_PAGE_STORAGE` 到 content script 获取 localStorage/sessionStorage，存为快照。storage 获取失败时注入 content script 重试。
-- **粘贴**（弹窗 Ctrl+V）：先调用 `removeAllCookies` 清空当前页所有 Cookie（同样逐级域名查询 + 逐条构造 URL 删除），再逐条 `chrome.cookies.set()`。Secure cookie 强制使用 `https://` URL 确保写入成功。之后 `SET_PAGE_STORAGE` 写入 storage，然后 `chrome.tabs.reload`。粘贴后自动清除快照（一次性使用）。
+- **粘贴**（弹窗 Ctrl+V）：先调用 `removeAllCookies` 清空当前页所有 Cookie（同样逐级域名查询 + 逐条构造 URL 删除），再逐条 `chrome.cookies.set()`。Secure cookie 强制使用 `https://` URL 确保写入成功。作用域规则见 `resolveWriteScope`：同父域子域之间保留 `domain`，跨站粘贴只能写 host-only 并计入 `scopeLost`；分区（CHIPS）Cookie 跳过；源 path 非 `/` 时额外写一份 `path=/` 副本并单独计数（有意为之的近似，写入前按 `name|domain|path` 去重）。之后 `SET_PAGE_STORAGE` 写入 storage，然后 `chrome.tabs.reload`。粘贴后自动清除快照（一次性使用）。
 - **清空**（弹窗 Ctrl+D）：`removeAllCookies(url)` 逐级域名查询 + 逐条删除当前 tab 所有 Cookie，全部删除成功绿色 toast，部分失败黄色 toast，全部失败红色 toast。
-- 快照存于 `chrome.storage.local` 的 `cookieSnapshot` key。
+- 快照存于 `chrome.storage.local` 的 `cookieSnapshot` key，带 30 分钟 TTL（`isSnapshotExpired`，读取时惰性失效）并在 `chrome.runtime.onStartup` 时清除。
+- 扩展本地存储**未加密**：表单值与快照都是明文，`inputType: 'password'` 只影响界面遮蔽（README / PRIVACY 已披露）。
 
 ### 表单草稿
 
@@ -58,14 +70,15 @@ npx tsc --noEmit       # 仅 TypeScript 类型检查
 
 ### 自动填充
 
-Content script 按 `DataFieldValue.selector` 查找元素 → `setInputValue` 触发 React/Vue 兼容事件。选择器未命中时用 `findInputByFieldName` 兜底（按 name/id/placeholder/label/aria-label 匹配），但计入 `selectorMissed` 而非 `filled`，toast 显示黄色警告。Content script 未加载时自动 `chrome.scripting.executeScript` 注入重试。
+Content script 按 `DataFieldValue.selector` 查找元素 → `setInputValue` 触发 React/Vue 兼容事件。选择器**为空或语法错误**的字段计入 `invalidSelectors` 并跳过（不做字段名兜底，避免写错输入框），其余字段继续填充，toast 用黄色警告列出被跳过的字段；选择器合法但未命中时才用 `findInputByFieldName` 兜底（按 name/id/placeholder/label/aria-label 匹配），同样计入 `selectorMissed` 而非 `filled`。服务端返回的 `total = filled + failed + selectorMissed + invalidSelectors`。Content script 未加载时自动 `chrome.scripting.executeScript` 注入重试。
 
 ### 测试
 
-- **vitest** + **happy-dom**，15 个测试文件，88 个测试用例
+- **vitest** + **happy-dom**，20 个测试文件，147 个测试用例
 - 测试文件命名 `*.test.ts`，放在对应源码目录旁边
-- Chrome API mock 在 `src/__tests__/chrome-mock.ts`
-- 测试文件已被 `tsconfig.json` 的 `exclude` 排除，不影响生产构建
+- Chrome API mock 在 `src/__tests__/chrome-mock.ts`；`dispatchMessage()` 可直接调用被 mock 捕获的 `chrome.runtime.onMessage` 监听器，用来测 content script / service worker 的整条消息链路
+- 测试文件不进生产构建（`tsconfig.json` 的 `exclude`），但**会被类型检查**：`tsconfig.test.json` 覆盖它们，`npm run check` 会跑 `typecheck:tests`（测试文件里的类型错误一样会挡住 CI）
+- 不要用 `chrome.cookies.Details`（该类型不存在），删除操作的类型是 `chrome.cookies.CookieDetails`
 
 ### 表格排序
 

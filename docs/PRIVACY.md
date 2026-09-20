@@ -21,6 +21,8 @@ The data is used only to provide the requested autofill, navigation, Cookie tran
 ## Storage and transmission
 
 - Saved templates, form values, settings, and temporary transfer snapshots are stored locally using `chrome.storage.local`.
+- This local storage is **not encrypted**. Saved form values and Cookie/Storage snapshots are kept as plain text, so anyone with access to the browser profile or its files can read them. The password field type only masks the value on screen; it is not encryption.
+- A transfer snapshot is deleted automatically after it is pasted, after 30 minutes without being pasted, and when Chrome restarts.
 - FormBridge does not include analytics, telemetry, advertising, or tracking.
 - FormBridge does not send saved form values, Cookies, Storage values, or browsing data to the developer or to third-party servers.
 - Data may be written to a target page only when you explicitly trigger an autofill or paste operation.
@@ -28,8 +30,14 @@ The data is used only to provide the requested autofill, navigation, Cookie tran
 ## Data retention and deletion
 
 - Templates and form data remain on the device until you edit, delete, import over, or uninstall the extension.
-- A Cookie/Storage transfer snapshot remains local until it is pasted, replaced by another snapshot, cleared by extension data removal, or the extension is uninstalled.
+- A Cookie/Storage transfer snapshot remains local until it is pasted, expires 30 minutes after it was captured, is replaced by another snapshot, cleared by extension data removal, or the extension is uninstalled.
 - Uninstalling the extension causes Chrome to remove its local extension storage according to Chrome's platform behavior.
+
+## Scope carried over by a Cookie transfer
+
+- Cookies are re-created on the target host. When the target is still inside the original parent domain, the domain scope is preserved; on a different site the cookie is written host-only, which is reported in the result message.
+- Partitioned (CHIPS) cookies are skipped, because their partition key cannot be re-created on another site.
+- Cookies whose source path is not `/` also get a `path=/` copy so they are sent on all paths of the target site. This is a deliberate approximation for cross-site debugging and is reported separately.
 
 ## Permissions
 

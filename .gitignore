@@ -1,4 +1,6 @@
 node_modules/
+vite.config.ts.timestamp-*
+dist/
 .vite/
 *.tsbuildinfo
 .DS_Store
@@ -10,3 +12,4 @@ findings.md
 progress.md
 release/
 .formbridge-analysis/
+.zcode/

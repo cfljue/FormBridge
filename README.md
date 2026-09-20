@@ -20,6 +20,8 @@ FormBridge is a local-first Chrome extension for developers, testers, support te
 
 > **No external network access:** FormBridge does not connect to a developer-operated server, call external APIs, or include analytics, telemetry, or advertising. Templates, form values, settings, and transfer snapshots remain in Chrome's local extension storage. The extension only interacts with pages when you trigger its features.
 
+> **Local storage is not encrypted:** saved form values and transfer snapshots are plain text inside Chrome's extension storage — the password field type only masks the value on screen. A snapshot is deleted after it is pasted, and expires after 30 minutes or when Chrome restarts.
+
 > FormBridge can expose authenticated browser state on the destination site. Use it only with accounts and environments you are authorized to access.
 
 ## Why FormBridge?
