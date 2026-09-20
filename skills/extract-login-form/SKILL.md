@@ -1,6 +1,6 @@
 ---
 name: extract-login-form
-description: Analyze a user-provided web page with Playwright, identify login and authentication form fields, generate stable CSS selectors, and return FormBridge-compatible JSON directly without reading field values. Use when a user wants to inspect a login page, avoid manually copying selectors, create a FormBridge template from a URL, analyze multi-step or iframe-based authentication UI, or optionally provides only a rough description of the target form.
+description: Analyze user-provided login pages with Playwright and return validated FormBridge template JSON with field and button selectors, without reading field values or submitting forms. Supports dynamic, multi-step and iframe analysis; iframe-only forms are reported as analysis rather than importable templates.
 ---
 
 # Extract Login Form
@@ -10,8 +10,8 @@ Analyze login-oriented page structure and return a reviewable FormBridge templat
 ## Workflow
 
 1. Require a URL. Accept an optional natural-language hint such as “the employee login card” or “the password login mode.”
-2. Confirm the user is authorized to inspect the page when the target appears private, internal, or access-controlled.
-3. From the FormBridge repository root, ensure dependencies exist with `npm ci`. If Playwright reports a missing browser, run `npx playwright install chromium` after obtaining any required approval.
+2. A user-supplied URL with a request to analyze it authorizes this read-only inspection and its normal login redirects. Reuse that authorization; a login page alone does not require another confirmation. Ask before expanding to unrelated restricted pages. This does not grant permission to bypass access controls or change server state.
+3. Run from the FormBridge repository root. Reuse installed dependencies; run `npm ci` if missing. If Playwright's browser is missing, prefer an installed channel with `--browser-channel chrome` or `--browser-channel msedge`; otherwise install Chromium with `npx playwright install chromium` using the environment's required permissions.
 4. Run the analyzer without an output directory:
 
 ```bash
@@ -21,9 +21,16 @@ node skills/extract-login-form/scripts/analyze-login-form.mjs \
   --format all
 ```
 
-5. Parse stdout as JSON. Review `analysis.candidates`, `analysis.warnings`, the detected fields, selectors, and button; select the importable `templates` array.
-6. Return that complete `templates` array in a fenced `json` code block so the user can copy it directly into FormBridge’s template dialog under **JSON Import**. Do not make the user extract it from the analysis envelope.
-7. Briefly summarize detected fields and any uncertainty. Ask the user to choose only when multiple candidates remain genuinely ambiguous.
+5. Review `analysis.candidates`, `analysis.warnings`, and `analysis.templateValidation`. The script validates generated templates through the application's `parseTemplateJson`; `passed` proves import structure, not browser behavior. An empty array means no importable template, not successful validation.
+6. Return the complete `templates` array in a fenced `json` code block. Always name the exact destination: **配置页 → 模板 → 新建模板 → JSON 导入** (Configuration → Templates → New Template → JSON Import). Explain that the Data page expects `values`, while templates use `fields`. Copy only JSON, without code fences.
+7. Summarize fields and whether automatic submission is configured. When `button` exists, explain that FormBridge will click it after filling; when absent, explain manual submission. Ask for a choice only when candidates remain ambiguous. Do not invent a button selector or silently choose among multiple plausible buttons.
+
+## Output review
+
+- Prefer stable IDs, test attributes and `name` over classes or structural selectors. `selectorUnique` means exactly one match in the observed document. `selectorQuality: attribute` is a preference signal, not a guarantee of stability across reloads; `heuristic` and `structural` need more scrutiny. Avoid generated IDs such as `_aria_auto_id_0` even if unique.
+- For late-rendered fields or buttons, use a targeted `--wait-for` or bounded observation before concluding that they are absent. A missing button does not mean the page has no button. Inspect visible native buttons, default form submit buttons, accessible labels and form-associated external buttons, without clicking.
+- Preserve the full final URL, including query and hash. FormBridge currently uses one `url` both for opening a page and substring matching; parameter changes or order changes can prevent matches. Explain that limitation when applicable rather than dropping navigation parameters or inventing unsupported fields.
+- If you edit the generated JSON (including user-supplied selectors), validate the exact final JSON again by piping it to `node skills/extract-login-form/scripts/validate-template.mjs` via stdin. The validator reuses the application's parser and does not access the browser. Recheck any changed selector's uniqueness on the approved page when available; otherwise label it user-provided and unverified. Do not echo credentials into commands.
 
 Do not require the user to download a file. The command defaults to the pure FormBridge template array when `--format` is omitted. Use `--output-dir <path>` only when the user explicitly asks to save artifacts; `--format analysis` is available when only ranked candidates and warnings are needed.
 

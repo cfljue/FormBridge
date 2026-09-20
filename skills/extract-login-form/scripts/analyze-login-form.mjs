@@ -5,6 +5,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
+import { validateTemplateJson } from './validate-template.mjs';
 
 function clampNumber(value, fallback, min, max) {
   const parsed = Number(value);
@@ -86,6 +87,7 @@ async function inspectFrame(frame, hint, observation, includeHidden) {
     const stableId = (id) => id
       && id.length <= 64
       && !/[0-9a-f]{8}-[0-9a-f-]{20,}/i.test(id)
+      && !/^(?:_?aria[_-]auto[_-]id|react-select-|headlessui-|radix-|:r|ember\d|mui-\d)/i.test(id)
       && !/\d{5,}/.test(id);
     const labelText = (element) => {
       const nativeLabels = Array.from(element.labels ?? []).map((label) => clean(label.textContent));
@@ -111,6 +113,16 @@ async function inspectFrame(frame, hint, observation, includeHidden) {
         const value = clean(element.getAttribute(attribute));
         if (value) candidates.push(`${tag}[${attribute}="${attrEscape(value)}"]`);
       }
+      for (const attribute of ['name', 'autocomplete', 'aria-label']) {
+        const value = clean(element.getAttribute(attribute));
+        if (value && !(attribute === 'autocomplete' && /^(off|on)$/.test(value))) {
+          candidates.push(`${tag}[${attribute}="${attrEscape(value)}"]`);
+        }
+      }
+      for (const selector of candidates) {
+        if (isUnique(selector)) return { selector, quality: 'attribute', unique: true };
+      }
+      candidates.length = 0;
       const stableClasses = Array.from(element.classList).filter((token) =>
         /^[a-zA-Z][a-zA-Z0-9_-]{2,}$/.test(token)
         && !/^(active|disabled|focus|hover|ng-|is-)/i.test(token)
@@ -138,7 +150,7 @@ async function inspectFrame(frame, hint, observation, includeHidden) {
       const type = clean(element.getAttribute('type')).toLowerCase();
       if (tag === 'input' && type) candidates.push(`input[type="${attrEscape(type)}"]`);
       for (const selector of candidates) {
-        if (isUnique(selector)) return { selector, quality: 'stable' };
+        if (isUnique(selector)) return { selector, quality: 'heuristic', unique: true };
       }
 
       const parts = [];
@@ -149,10 +161,10 @@ async function inspectFrame(frame, hint, observation, includeHidden) {
         const suffix = siblings.length > 1 ? `:nth-of-type(${siblings.indexOf(current) + 1})` : '';
         parts.unshift(`${currentTag}${suffix}`);
         const selector = parts.join(' > ');
-        if (isUnique(selector)) return { selector, quality: 'structural' };
+        if (isUnique(selector)) return { selector, quality: 'structural', unique: true };
         current = current.parentElement;
       }
-      return { selector: parts.join(' > '), quality: 'structural' };
+      return { selector: parts.join(' > '), quality: 'structural', unique: isUnique(parts.join(' > ')) };
     };
     const inferRole = (element, label) => {
       const type = clean(element.getAttribute('type')).toLowerCase();
@@ -206,6 +218,7 @@ async function inspectFrame(frame, hint, observation, includeHidden) {
         visible: isVisible(element),
         selector: selector.selector,
         selectorQuality: selector.quality,
+        selectorUnique: selector.unique,
       };
     };
     const excludedTypes = new Set(['hidden', 'submit', 'button', 'reset', 'image', 'file']);
@@ -214,12 +227,16 @@ async function inspectFrame(frame, hint, observation, includeHidden) {
       .filter((element) => !excludedTypes.has(clean(element.getAttribute('type')).toLowerCase()))
       .filter((element) => !isLikelyDecoy(element))
       .filter((element) => analyzeHidden || isVisible(element));
-    const buttonName = (element) => clean(
-      element.tagName === 'INPUT' ? element.getAttribute('value') : element.textContent
-    );
-    const findButton = (root) => {
-      const buttons = Array.from(root.querySelectorAll('button, input[type="submit"], input[type="button"], [role="button"], [class*="btn"], [class*="button"]'))
-        .filter((element) => !element.disabled && (analyzeHidden || isVisible(element)));
+    const buttonName = (element) => clean(element.getAttribute('aria-label')
+      || element.getAttribute('title') || (element.tagName === 'INPUT' ? '' : element.textContent));
+    const findButton = (root, form) => {
+      const buttons = [...new Set([
+        ...root.querySelectorAll('button, input[type="submit"], input[type="button"], [role="button"], [class*="btn"], [class*="button"]'),
+        ...Array.from(form?.elements ?? []).filter((element) => element.matches('button, input[type="submit"], input[type="button"]')),
+      ])].filter((element) => !element.disabled && element.getAttribute('aria-disabled') !== 'true'
+        && (!form || !element.form || element.form === form)
+        && !element.matches('[type="reset"]')
+        && (analyzeHidden || isVisible(element)));
       const loginPattern = /sign.?in|log.?in|continue|next|submit|登录|登陆|下一步|继续|确定|验证/i;
       const depthOf = (element) => { let depth = 0; for (let current = element; current; current = current.parentElement) depth += 1; return depth; };
       const priorityOf = (element) => {
@@ -229,11 +246,16 @@ async function inspectFrame(frame, hint, observation, includeHidden) {
         return 3;
       };
       const button = buttons
-        .filter((element) => element.matches('[type="submit"]') || loginPattern.test(buttonName(element)))
-        .sort((a, b) => priorityOf(a) - priorityOf(b) || depthOf(b) - depthOf(a))[0] ?? null;
-      if (!button) return null;
-      const selector = selectorFor(button);
-      return { name: buttonName(button) || 'Submit', selector: selector.selector, selectorQuality: selector.quality };
+        .filter((element) => !/cancel|reset|log.?out|sign.?out|取消|重置|退出/i.test(buttonName(element)))
+        .filter((element) => (element.form && element.type === 'submit') || loginPattern.test(buttonName(element)))
+        .sort((a, b) => priorityOf(a) - priorityOf(b) || depthOf(b) - depthOf(a));
+      if (!button.length) return { button: null, buttonWarning: 'No identifiable login button; submit manually.' };
+      const best = button.filter((element) => priorityOf(element) === priorityOf(button[0]));
+      if (best.length > 1) return { button: null, buttonWarning: 'Multiple possible login buttons; automatic clicking omitted. Review the target button.' };
+      const selected = best[0];
+      const selector = selectorFor(selected);
+      if (!selector.unique) return { button: null, buttonWarning: 'Login button selector is not unique; submit manually.' };
+      return { button: { name: buttonName(selected) || 'Submit', selector: selector.selector, selectorQuality: selector.quality, selectorUnique: true } };
     };
     const candidateFor = (root, kind, index) => {
       const elements = kind === 'form'
@@ -248,7 +270,7 @@ async function inspectFrame(frame, hint, observation, includeHidden) {
           if (/login|sign.?in|auth/i.test(marker)) { actionRoot = current; break; }
         }
       }
-      const button = findButton(actionRoot);
+      const { button, buttonWarning } = findButton(actionRoot, kind === 'form' ? root : null);
       const roles = new Set(fields.map((field) => field.role));
       let score = 0;
       if (roles.has('password')) score += 60;
@@ -286,6 +308,7 @@ async function inspectFrame(frame, hint, observation, includeHidden) {
         matchedHintTokens: [...new Set([...matchedHintTokens, ...semanticMatches])],
         fields,
         button,
+        buttonWarning,
       };
     };
 
@@ -370,20 +393,21 @@ function createFormBridgeTemplate(candidates, finalUrl, title) {
       if (!fieldsBySelector.has(field.selector)) fieldsBySelector.set(field.selector, field);
     }
   }
+  if ([...fieldsBySelector.values()].some((field) => !field.selectorUnique)) return [];
   const usedNames = new Map();
   const fields = [...fieldsBySelector.values()].map((field) => ({
     id: randomUUID(),
     name: fieldDisplayName(field, usedNames),
     selector: field.selector,
+    ...(field.role === 'password' ? { inputType: 'password' } : {}),
   }));
   const now = Date.now();
   const parsed = new URL(finalUrl);
-  const matchUrl = `${parsed.host}${parsed.pathname === '/' ? '' : parsed.pathname}`;
   return [{
     id: randomUUID(),
     name: `${title || parsed.hostname} login`,
     description: `Generated by extract-login-form from ${finalUrl}. Review selectors before use.`,
-    url: matchUrl,
+    url: finalUrl,
     fields,
     button: primary.button ? { name: primary.button.name, selector: primary.button.selector } : undefined,
     createdAt: now,
@@ -447,6 +471,15 @@ export async function analyzeLoginForm(rawOptions) {
     const finalUrl = page.url();
     const title = await page.title();
     const templates = createFormBridgeTemplate(candidates, finalUrl, title);
+    for (const candidate of candidates) {
+      if (candidate.buttonWarning) warnings.push(candidate.buttonWarning);
+      if (candidate.fields.some((field) => !field.selectorUnique)) warnings.push('A field selector is not unique; affected templates cannot be imported safely.');
+      if ([...candidate.fields, candidate.button].filter(Boolean).some((field) => field.selectorQuality !== 'attribute')) {
+        warnings.push('Some selectors use classes, text attributes, or DOM structure. Uniqueness is verified only in this observation; review stability before reuse.');
+      }
+    }
+    if (new URL(finalUrl).search || new URL(finalUrl).hash) warnings.push('Navigation query/hash preserved. FormBridge uses the same URL for navigation and substring matching; changed query order or parameters may require adjusting the record URL.');
+    if (templates.length) validateTemplateJson(JSON.stringify(templates));
     const analysis = {
       analysisVersion: 1,
       source: {
@@ -458,6 +491,7 @@ export async function analyzeLoginForm(rawOptions) {
       },
       observations,
       candidates,
+      templateValidation: templates.length ? 'passed' : 'not-applicable',
       warnings: [...new Set(warnings)],
       privacy: {
         inputValuesRead: false,

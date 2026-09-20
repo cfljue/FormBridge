@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 
-import { analyzeLoginForm, formatOutput } from './analyze-login-form.mjs';
+import { analyzeLoginForm as analyze, formatOutput } from './analyze-login-form.mjs';
+import { validateTemplateJson } from './validate-template.mjs';
+const analyzeLoginForm = (options) => analyze({ browserChannel: process.env.PLAYWRIGHT_BROWSER_CHANNEL, ...options });
 
 const html = `<!doctype html>
 <html lang="en">
@@ -51,9 +53,21 @@ const modeSwitchHtml = `<!doctype html>
   </body>
 </html>`;
 
+const fixtures = {
+  '/plain': '<form><input name="user"><input type="password" name="password"><button>→</button></form>',
+  '/dynamic': '<form><input id="_aria_auto_id_0" class="large" name="username"><input id="react-select-3-input" name="password" type="password"><button type="submit">登录</button></form>',
+  '/ambiguous': '<form><input name="username"><input type="password"><button>Sign in</button><button>Continue</button></form>',
+  '/input-submit': '<form><input name="username"><input type="password"><input type="submit" value="sensitive-button-value"></form>',
+  '/outside': '<form id="auth"><input name="username"><input type="password"></form><button form="auth">→</button>',
+  '/non-login': '<form><input name="username"><input type="password"><button type="reset">Reset</button><button type="button">Show password</button></form>',
+  '/iframe': '<iframe src="/plain"></iframe>',
+};
+let submissions = 0;
 const server = createServer((request, response) => {
+  if (request.method !== 'GET') submissions += 1;
+  const pathname = new URL(request.url, 'http://localhost').pathname;
   response.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
-  response.end(request.url === '/multi' ? multiStepHtml : request.url === '/modes' ? modeSwitchHtml : html);
+  response.end(fixtures[pathname] ?? (pathname === '/multi' ? multiStepHtml : pathname === '/modes' ? modeSwitchHtml : html));
 });
 
 await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
@@ -73,6 +87,7 @@ try {
     ['#employee-email', '#employee-password', 'input[name="remember"]']
   );
   assert.equal(result.templates[0].button.selector, '#sign-in');
+  assert.equal(result.templates[0].fields.find((field) => field.selector === '#employee-password').inputType, 'password');
   assert.deepEqual(formatOutput(result), result.templates);
   assert.deepEqual(formatOutput(result, 'analysis'), result.analysis);
   assert.deepEqual(formatOutput(result, 'all'), result);
@@ -104,6 +119,33 @@ try {
   );
   assert.equal(hiddenModeResult.templates[0].button.selector, '#password-submit');
   assert.equal(JSON.stringify(hiddenModeResult).includes('hideName'), false);
+  const base = `http://127.0.0.1:${address.port}`;
+  const plain = await analyzeLoginForm({ url: `${base}/plain?action=redirect&label=s3#login` });
+  assert.equal(plain.templates[0].url, `${base}/plain?action=redirect&label=s3#login`);
+  assert.ok(plain.templates[0].button);
+  assert.equal(plain.analysis.templateValidation, 'passed');
+  validateTemplateJson(JSON.stringify(plain.templates));
+  assert.throws(() => validateTemplateJson('{"name":"Wrong data format","values":[]}'), /fields/);
+  assert.throws(() => validateTemplateJson('```json\n{}\n```'));
+  assert.throws(() => validateTemplateJson(JSON.stringify([...plain.templates, ...plain.templates])), /exactly one/);
+  const dynamic = await analyzeLoginForm({ url: `${base}/dynamic` });
+  assert.deepEqual(dynamic.templates[0].fields.map((field) => field.selector), ['input[name="username"]', 'input[name="password"]']);
+  assert.ok(dynamic.analysis.candidates[0].fields.every((field) => field.selectorUnique && field.selectorQuality === 'attribute'));
+  const ambiguous = await analyzeLoginForm({ url: `${base}/ambiguous` });
+  assert.equal(ambiguous.templates[0].button, undefined);
+  assert.ok(ambiguous.analysis.warnings.some((warning) => warning.includes('Multiple possible login buttons')));
+  const inputSubmit = await analyzeLoginForm({ url: `${base}/input-submit` });
+  assert.ok(inputSubmit.templates[0].button);
+  assert.equal(JSON.stringify(inputSubmit).includes('sensitive-button-value'), false);
+  const outside = await analyzeLoginForm({ url: `${base}/outside` });
+  assert.ok(outside.templates[0].button);
+  const nonLogin = await analyzeLoginForm({ url: `${base}/non-login` });
+  assert.equal(nonLogin.templates[0].button, undefined);
+  assert.ok(nonLogin.analysis.warnings.some((warning) => warning.includes('submit manually')));
+  const iframe = await analyzeLoginForm({ url: `${base}/iframe` });
+  assert.deepEqual(iframe.templates, []);
+  assert.ok(iframe.analysis.warnings.some((warning) => warning.includes('iframe')));
+  assert.equal(submissions, 0);
   process.stdout.write('extract-login-form test passed\n');
 } finally {
   await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
