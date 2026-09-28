@@ -88,6 +88,16 @@ Search matching records and trigger form filling directly from the extension pop
 
 ## Install
 
+### Directly from this repository (no build needed)
+
+The built extension is committed to `dist/`, so you can use it without installing anything:
+
+1. Download or clone this repository.
+2. Open `chrome://extensions` and enable **Developer mode**.
+3. Choose **Load unpacked** and select the `dist/` folder.
+
+After updating the repository, reload the extension from `chrome://extensions` (the build output changes on every rebuild).
+
 ### GitHub Release
 
 1. Download `FormBridge-v1.0.0.zip` from the [latest release](https://github.com/cfljue/FormBridge/releases/latest).
@@ -105,7 +115,7 @@ npm test
 npm run build
 ```
 
-Then load the generated `dist/` directory from `chrome://extensions`.
+Then load the generated `dist/` directory from `chrome://extensions`. When you change anything under `src/`, run `npm run build` and commit the updated `dist/` as well, so the committed copy stays in sync with the source.
 
 ## Quick start
 

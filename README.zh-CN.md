@@ -87,6 +87,16 @@ npx playwright install chromium
 
 ## 安装
 
+### 直接用本仓库里的 dist/（无需构建）
+
+构建产物已随仓库提交，不必安装任何依赖即可使用：
+
+1. 下载或克隆本仓库。
+2. 打开 `chrome://extensions`，开启“开发者模式”。
+3. 点击“加载已解压的扩展程序”，选择 `dist/` 目录。
+
+仓库更新后，在 `chrome://extensions` 里重新加载一次扩展（每次重新构建产物都会变化）。
+
 ### 从 GitHub Release 安装
 
 1. 在[最新版本](https://github.com/cfljue/FormBridge/releases/latest)下载 `FormBridge-v1.0.0.zip`。
@@ -104,7 +114,7 @@ npm test
 npm run build
 ```
 
-构建完成后，在 `chrome://extensions` 中加载 `dist/` 目录。
+构建完成后，在 `chrome://extensions` 中加载 `dist/` 目录。改动 `src/` 下的任何内容后，请运行 `npm run build` 并把更新后的 `dist/` 一并提交，让仓库里的产物与源码保持同步。
 
 ## 快速上手
 

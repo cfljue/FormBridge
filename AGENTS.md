@@ -17,7 +17,9 @@ npm install            # 安装依赖
 npx tsc --noEmit       # 等价于 npm run typecheck
 ```
 
-构建后加载扩展：Chrome → `chrome://extensions` → 开发者模式 → 加载已解压的扩展程序 → 选择 `dist/` 目录。`dist/` **不进版本控制**（每次构建产物带 hash，release workflow 会自行构建打包），`docs/TEST_PLAN.md` 含完整手动测试清单。
+构建后加载扩展：Chrome → `chrome://extensions` → 开发者模式 → 加载已解压的扩展程序 → 选择 `dist/` 目录。`docs/TEST_PLAN.md` 含完整手动测试清单。
+
+**`dist/` 纳入版本控制**：仓库里的 `dist/` 是一份可直接加载的完整构建，供不想构建的人使用。因此改动 `src/` 后必须 `npm run build` 并把 `dist/` 一并提交（构建产物带 hash 文件名，漏提交会让仓库里的产物落后于源码）。每次重新构建都会换掉 chunk 文件名，所以构建后要在 `chrome://extensions` 里点一次**重新加载**，否则已加载的扩展会因引用失效而表现为不可用。
 
 ## 架构概览
 
